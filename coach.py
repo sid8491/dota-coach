@@ -6,10 +6,21 @@ import urllib.error
 import urllib.request
 from collections import deque
 
-from constants import ability_dname, hero_info, item_dname
+from constants import (
+    ability_desc,
+    ability_dname,
+    ALL_ITEM_DNAMES,
+    hero_info,
+    item_dname,
+)
 from tts import TTS
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/chat")
+GEMINI_URL = os.getenv(
+    "GEMINI_URL",
+    "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+)
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 MODEL = os.getenv("DOTA_COACH_MODEL", "qwen3.6:27b")
 MIN_INTERVAL_SEC = 8
 MAX_RECENT_EVENTS = 8
@@ -174,11 +185,26 @@ def _format_abilities(abilities):
         else:
             cd = a.get("cooldown", 0) or 0
             bits.append("off cd" if cd == 0 else f"ON CD {cd}s")
-        lines.append(f"  - {dname} ({', '.join(bits)})")
+        desc = ability_desc(name)
+        head = f"  - {dname} ({', '.join(bits)})"
+        lines.append(f"{head}: {desc}" if desc else head)
     return "\n".join(lines) if lines else "  (none)"
 
 
-def _build_prompt(summary, events, trigger, recent_tips=None):
+def _extract_recommended_items(tip):
+    """Return the set of item display names this tip recommends.
+    Matches case-insensitively against the full OpenDota item display-name set.
+    """
+    text = tip.lower()
+    found = set()
+    for dname in ALL_ITEM_DNAMES:
+        # Word-boundary-ish: surround with spaces to avoid 'tango' matching 'pentangle'.
+        if f" {dname} " in f" {text} " or f" {dname}." in text or f" {dname}," in text:
+            found.add(dname)
+    return found
+
+
+def _build_prompt(summary, events, trigger, recent_tips=None, recommended_items=None):
     s = summary
     h = s["self"]
     p = s["player"]
@@ -213,6 +239,13 @@ def _build_prompt(summary, events, trigger, recent_tips=None):
             f"\nRecent tips you already gave (DO NOT repeat or rephrase, "
             f"give a DIFFERENT angle):\n{tips_lines}\n"
         )
+    items_already_block = ""
+    if recommended_items:
+        items_already_block = (
+            f"\nItems you have ALREADY recommended this match "
+            f"(DO NOT recommend any of these again — pick a different next item):\n"
+            f"  {', '.join(sorted(recommended_items))}\n"
+        )
     trigger_tail = ""
     trigger_type = trigger.split(":", 1)[0].strip()
     if trigger_type == "periodic_check":
@@ -220,7 +253,7 @@ def _build_prompt(summary, events, trigger, recent_tips=None):
             "\nFor this periodic check-in, give EXACTLY ONE of:\n"
             "(a) Item recommendation: 'Build [Item Name] next — [one-line reason "
             "tied to specific enemy heroes].' Pick from items not already in your "
-            "inventory.\n"
+            "inventory AND not in the already-recommended list.\n"
             "(b) Specific objective call: 'Push [lane] T1 now — [reason].' / "
             "'Smoke for rosh — [reason].' / 'Defend [lane] — [reason].'\n"
             "Reference your actual gold and the enemy lineup. NOT generic advice.\n"
@@ -249,10 +282,30 @@ def _build_prompt(summary, events, trigger, recent_tips=None):
         f"\n"
         f"Recent events:\n{recent}\n"
         f"{tips_block}"
+        f"{items_already_block}"
         f"\n"
         f"Trigger: {trigger}\n"
         f"{trigger_tail}"
     )
+
+
+def _is_gemini_model(model):
+    return model.startswith("gemini-") or model.startswith("models/gemini-")
+
+
+def _call_llm(model, user_msg, timeout=120):
+    """Route to the right provider based on model name. Returns (content, debug)."""
+    if _is_gemini_model(model):
+        if not GEMINI_API_KEY:
+            return "", {"error": "GEMINI_API_KEY not set"}
+        return _call_openai_compatible(
+            GEMINI_URL,
+            {"Authorization": f"Bearer {GEMINI_API_KEY}"},
+            model,
+            user_msg,
+            timeout,
+        )
+    return _call_ollama(model, user_msg, timeout)
 
 
 def _call_ollama(model, user_msg, timeout=120):
@@ -287,6 +340,42 @@ def _call_ollama(model, user_msg, timeout=120):
     return content, None
 
 
+def _call_openai_compatible(url, headers, model, user_msg, timeout=120):
+    """Call any OpenAI-compatible chat-completions endpoint (Gemini, OpenRouter, OpenAI)."""
+    body = json.dumps(
+        {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": user_msg},
+            ],
+            "temperature": 0.4,
+            "max_tokens": 400,
+        }
+    ).encode("utf-8")
+    req = urllib.request.Request(
+        url,
+        data=body,
+        headers={"Content-Type": "application/json", **headers},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as ex:
+        body = ex.read().decode("utf-8", errors="replace")[:300]
+        return "", {"http_status": ex.code, "body": body}
+    choices = data.get("choices") or []
+    if not choices:
+        return "", {"raw_keys": list(data.keys()), "preview": str(data)[:200]}
+    msg = choices[0].get("message") or {}
+    content = (msg.get("content") or "").strip()
+    if not content:
+        finish = choices[0].get("finish_reason")
+        return "", {"finish_reason": finish, "raw_keys": list(msg.keys())}
+    return content, None
+
+
 class Coach:
     def __init__(self, model=MODEL, min_interval_sec=MIN_INTERVAL_SEC, tts=None):
         self.model = model
@@ -298,12 +387,20 @@ class Coach:
         self.recent_tips = deque(maxlen=RECENT_TIPS_MEMORY)
         self.last_trigger_clock = {}
         self.latest_summary = None
-        print(f"[coach] model: {self.model} via {OLLAMA_URL}", flush=True)
+        self.current_matchid = None
+        self.recommended_items = set()
+        endpoint = GEMINI_URL if _is_gemini_model(self.model) else OLLAMA_URL
+        print(f"[coach] model: {self.model} via {endpoint}", flush=True)
 
     def maybe_advise(self, summary, events):
         # Always refresh the latest snapshot — used for the freshness check
         # when an in-flight LLM response returns.
         self.latest_summary = summary
+        # Reset per-match item dedup when match changes.
+        matchid = summary.get("matchid")
+        if matchid and matchid != self.current_matchid:
+            self.current_matchid = matchid
+            self.recommended_items = set()
         if not events:
             return
         trigger = _pick_trigger(events)
@@ -354,10 +451,14 @@ class Coach:
     def _run(self, summary, events, trigger):
         try:
             prompt = _build_prompt(
-                summary, events, trigger, recent_tips=list(self.recent_tips)
+                summary,
+                events,
+                trigger,
+                recent_tips=list(self.recent_tips),
+                recommended_items=set(self.recommended_items),
             )
             trigger_type = trigger.split(":", 1)[0].strip()
-            tip, debug = _call_ollama(self.model, prompt)
+            tip, debug = _call_llm(self.model, prompt)
             if not tip:
                 thinking_excerpt = (debug or {}).get("thinking", "")[:120]
                 done_reason = (debug or {}).get("done_reason")
@@ -386,6 +487,9 @@ class Coach:
                 return
             print(f"[COACH][{self.model}] {tip}", flush=True)
             self.recent_tips.append(tip)
+            new_items = _extract_recommended_items(tip)
+            if new_items:
+                self.recommended_items.update(new_items)
             self.tts.speak(tip)
         except urllib.error.URLError as ex:
             print(f"[coach] ollama unreachable at {OLLAMA_URL}: {ex}", flush=True)

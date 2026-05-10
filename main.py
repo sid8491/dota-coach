@@ -3,7 +3,12 @@ import sys
 import time
 from datetime import datetime
 
+from dotenv import load_dotenv
 from flask import Flask, abort, request
+
+# Load .env BEFORE importing coach — coach reads env vars at module level
+# (DOTA_COACH_MODEL, OLLAMA_URL, GEMINI_URL, GEMINI_API_KEY).
+load_dotenv()
 
 from logger import setup_logging, switch_to_match
 

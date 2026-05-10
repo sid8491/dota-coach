@@ -29,3 +29,9 @@ Thumbs.db
 .claude/
 
 CLAUDE.md
+
+# Local secrets — model name + API keys
+.env
+
+dota_coach.pdf
+showcase.html

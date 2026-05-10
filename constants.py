@@ -67,6 +67,37 @@ def ability_dname(name):
     return cleaned.replace("_", " ").title()
 
 
+def ability_desc(name, max_len=180):
+    """Short one-line description of an ability for prompt injection.
+    Returns the first sentence of the OpenDota desc, truncated to max_len.
+    """
+    v = _abilities.get(name)
+    if not isinstance(v, dict):
+        return ""
+    desc = (v.get("desc") or "").strip()
+    if not desc:
+        return ""
+    # First sentence: cut at first newline or period+space.
+    cut = len(desc)
+    for sep in ("\n", ". "):
+        i = desc.find(sep)
+        if 0 <= i < cut:
+            cut = i
+    one_line = desc[:cut].strip().rstrip(".")
+    if len(one_line) > max_len:
+        one_line = one_line[: max_len - 1].rstrip() + "…"
+    return one_line
+
+
+# Lowercase set of all item display names — used to detect which items
+# a coach tip is recommending (for per-match dedup).
+ALL_ITEM_DNAMES = {
+    v["dname"].lower()
+    for v in _items.values()
+    if isinstance(v, dict) and v.get("dname")
+}
+
+
 def hero_info(hero_short_name):
     return HERO_BY_SHORT_NAME.get(hero_short_name)
 
