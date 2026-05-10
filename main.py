@@ -8,7 +8,9 @@ from flask import Flask, abort, request
 
 # Load .env BEFORE importing coach — coach reads env vars at module level
 # (DOTA_COACH_MODEL, OLLAMA_URL, GEMINI_URL, GEMINI_API_KEY).
-load_dotenv()
+# override=True means .env values win over any pre-existing shell vars,
+# so editing .env is always authoritative.
+load_dotenv(override=True)
 
 from logger import setup_logging, switch_to_match
 

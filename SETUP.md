@@ -264,13 +264,18 @@ GEMINI_API_KEY=AIza...your-key...
 
 **`.env` is gitignored** — your key won't be committed. `.env.example` is the committed template.
 
-You can still override any value with a shell env var if you want, e.g.:
+**`.env` is authoritative.** `main.py` calls `load_dotenv(override=True)`, which means values in `.env` overwrite anything you may have already set with `$env:...` in your shell. Edit `.env` and re-run — that's the workflow.
+
+If you want to test a one-off model without editing `.env`, comment the relevant line out:
+```
+# DOTA_COACH_MODEL=gemini-2.5-flash
+```
+Then in your shell:
 ```powershell
-$env:DOTA_COACH_MODEL = "qwen3.6:27b"   # overrides .env for this session
+$env:DOTA_COACH_MODEL = "qwen3.6:27b"
 python main.py
 ```
-
-(Shell env vars take precedence over `.env` only if you set them; otherwise `.env` wins because we use `load_dotenv()` without `override=True`.)
+(With the `.env` line commented, the shell var is the only source.)
 
 ---
 
