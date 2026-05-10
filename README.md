@@ -1,8 +1,24 @@
-# Dota Coach — Setup Guide
+# Dota Coach
 
 A local Dota 2 coaching assistant. The Dota client streams game state to a Flask server on `127.0.0.1:8000`. Each tick is summarized, diffed against the previous tick, and key moments (death, low HP, ult ready, enemies missing, periodic check, etc.) trigger a local LLM via Ollama. The LLM's tip is logged and spoken via Piper TTS.
 
-Tested on Windows 11 with PowerShell 7+, NVIDIA GPU recommended (≥16 GB VRAM for the 27B model, 8 GB for smaller models).
+## What it does
+
+- Listens to Dota 2's Game State Integration (GSI) and parses every tick into a flat summary (hero, items, abilities, allies/enemies in vision, score, roshan, server events).
+- Detects gameplay moments worth coaching: deaths, low HP/MP, ult-ready, level-up milestones, talent picks, aghs/shard pickups, enemies missing from the map, lost buildings, roshan/aegis events, plus a periodic strategic check-in.
+- Throttles LLM calls with a global cooldown, per-trigger cooldown, in-flight guard, and a freshness check that drops stale tips when the situation has already resolved by the time the model responds.
+- Speaks the tip aloud via Piper TTS so you don't have to read it mid-fight.
+- Logs every match to `logs/<matchid>.log` for after-game review.
+
+## Requirements at a glance
+
+- Windows 10/11 (audio path uses `winsound`)
+- Python 3.10+, Flask, piper-tts
+- Ollama running locally with a chat-capable model
+- NVIDIA GPU recommended — ≥16 GB VRAM for the default `qwen3.6:27b`, ~5 GB for `gemma4:e4b`
+- Dota 2 with a GSI cfg file dropped into `gamestate_integration/`
+
+Full install, run, tuning, and troubleshooting steps below.
 
 ---
 
