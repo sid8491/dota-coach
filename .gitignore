@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.pytest_cache/
+
+# Virtualenv
+.venv/
+venv/
+
+# Logs (per-match and session logs)
+logs/
+
+# Piper voice models — large binaries, downloaded per SETUP.md §5
+models/*.onnx
+models/*.onnx.json
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local Claude Code settings
+.claude/
+
+CLAUDE.md
