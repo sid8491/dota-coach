@@ -221,6 +221,45 @@
   /* spotlighted prompt block */
   .spot{border-left:3px solid var(--accent2);padding:8px 14px;background:rgba(255,209,102,.04);border-radius:0 8px 8px 0;margin:8px 0;font-size:13.5px;color:#e6edf3}
   .spot b{color:var(--accent2)}
+
+  /* hero action buttons */
+  .hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px;align-items:center}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:8px;font-size:13.5px;font-family:ui-monospace,monospace;letter-spacing:.02em;text-decoration:none;transition:all .2s;border:1px solid var(--line)}
+  .btn:hover{text-decoration:none;transform:translateY(-1px)}
+  .btn.primary{background:var(--accent);color:#001220;border-color:var(--accent)}
+  .btn.primary:hover{background:#a3e7ff;box-shadow:0 4px 16px rgba(124,220,255,.25)}
+  .btn.ghost{background:rgba(255,255,255,.04);color:#e6edf3}
+  .btn.ghost:hover{background:rgba(255,255,255,.08);border-color:#365070}
+  .btn svg{width:16px;height:16px;flex-shrink:0}
+
+  /* shields.io badge row */
+  .badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;align-items:center}
+  .badges img{height:20px;border-radius:3px;display:block}
+
+  /* tech-stack pills */
+  .stack{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}
+  .stack-label{font-size:11px;color:var(--mute);letter-spacing:.08em;text-transform:uppercase;font-family:ui-monospace,monospace;margin-right:4px}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;background:rgba(124,220,255,.06);border:1px solid rgba(124,220,255,.2);font-size:12px;color:#cfe2f3;font-family:ui-monospace,monospace}
+  .pill .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+  .pill.py .dot{background:#3776ab}
+  .pill.flask .dot{background:#e6edf3}
+  .pill.ollama .dot{background:#c084fc}
+  .pill.piper .dot{background:#5cd6a6}
+  .pill.windows .dot{background:#00a4ef}
+
+  /* source links beside section headings */
+  .src-link{font-family:ui-monospace,monospace;font-size:11px;color:var(--mute);margin-left:auto;text-decoration:none;padding:3px 8px;border-radius:5px;border:1px solid var(--line);background:rgba(255,255,255,.02);transition:all .2s}
+  .src-link:hover{color:var(--accent);border-color:var(--accent);text-decoration:none;background:rgba(124,220,255,.06)}
+  h2.with-src{justify-content:flex-start}
+
+  /* structured footer */
+  .footer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:32px;padding-top:24px;border-top:1px solid var(--line)}
+  @media (max-width:840px){.footer-grid{grid-template-columns:1fr;gap:20px}}
+  .footer-col h5{font-size:11px;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;font-family:ui-monospace,monospace;margin:0 0 8px}
+  .footer-col ul{list-style:none;padding:0;margin:0}
+  .footer-col li{margin:4px 0;font-size:13px;color:var(--mute)}
+  .footer-col a{color:#cbd6e2;font-size:13px}
+  .footer-col a:hover{color:var(--accent)}
 </style>
 </head>
 <body>
@@ -236,6 +275,32 @@
     <div class="num-card"><div class="v">8–22 s</div><div class="l">LLM latency (qwen 27B)</div></div>
     <div class="num-card"><div class="v">17</div><div class="l">trigger types that wake the LLM</div></div>
     <div class="num-card"><div class="v">3</div><div class="l">independent output filters</div></div>
+  </div>
+
+  <div class="hero-actions">
+    <a class="btn primary" href="https://github.com/sid8491/dota-coach" target="_blank" rel="noopener">
+      <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+      View on GitHub
+    </a>
+    <a class="btn ghost" href="https://github.com/sid8491/dota-coach#readme" target="_blank" rel="noopener">README</a>
+    <a class="btn ghost" href="https://github.com/sid8491/dota-coach/issues" target="_blank" rel="noopener">Issues</a>
+  </div>
+
+  <div class="badges">
+    <a href="https://github.com/sid8491/dota-coach/stargazers" target="_blank" rel="noopener"><img src="https://img.shields.io/github/stars/sid8491/dota-coach?style=flat&color=ffd166&labelColor=121a25&logo=github" alt="GitHub stars" loading="lazy"></a>
+    <a href="https://github.com/sid8491/dota-coach/commits/master" target="_blank" rel="noopener"><img src="https://img.shields.io/github/last-commit/sid8491/dota-coach?style=flat&color=7cdcff&labelColor=121a25" alt="Last commit" loading="lazy"></a>
+    <a href="https://github.com/sid8491/dota-coach" target="_blank" rel="noopener"><img src="https://img.shields.io/github/languages/top/sid8491/dota-coach?style=flat&color=5cd6a6&labelColor=121a25" alt="Top language" loading="lazy"></a>
+    <a href="https://github.com/sid8491/dota-coach" target="_blank" rel="noopener"><img src="https://img.shields.io/github/repo-size/sid8491/dota-coach?style=flat&color=8aa0b4&labelColor=121a25" alt="Repo size" loading="lazy"></a>
+    <img src="https://img.shields.io/badge/platform-Windows-00a4ef?style=flat&labelColor=121a25&logo=windows" alt="Platform: Windows" loading="lazy">
+  </div>
+
+  <div class="stack">
+    <span class="stack-label">Built with</span>
+    <span class="pill py"><span class="dot"></span>Python 3.10+</span>
+    <span class="pill flask"><span class="dot"></span>Flask</span>
+    <span class="pill ollama"><span class="dot"></span>Ollama</span>
+    <span class="pill piper"><span class="dot"></span>Piper TTS</span>
+    <span class="pill"><span class="dot"></span>Gemini API (optional)</span>
   </div>
 
   <!-- particles -->
@@ -391,7 +456,7 @@
 
 <!-- 04 FLOW -->
 <section id="flow" class="reveal">
-  <h2><span class="num">04</span> End-to-end flow (per tick)</h2>
+  <h2 class="with-src"><span class="num">04</span> End-to-end flow (per tick) <a class="src-link" href="https://github.com/sid8491/dota-coach/blob/master/main.py" target="_blank" rel="noopener">main.py →</a></h2>
   <p>One-way per request. The Flask handler returns 200 immediately; the LLM call hops to a daemon thread so a slow model never backs up GSI's POST loop. The live ticker below is a fake stream of what the console actually prints during a match.</p>
 
   <div class="pipeline">
@@ -424,7 +489,7 @@ return ("ok", 200)                         # never block on LLM</code></pre>
 
 <!-- 05 WHAT WAKES THE LLM -->
 <section id="events" class="reveal">
-  <h2><span class="num">05</span> What wakes the LLM</h2>
+  <h2 class="with-src"><span class="num">05</span> What wakes the LLM <a class="src-link" href="https://github.com/sid8491/dota-coach/blob/master/events.py" target="_blank" rel="noopener">events.py →</a></h2>
   <p>You can't run the LLM every tick — it costs 8–22 s and you'd queue a 50-deep backlog inside a minute. Instead, a stateful <code>EventDiffer</code> compares each tick to the previous one and emits typed <b>events</b>. A subset (17 types) wakes the model; the rest are logged for reference.</p>
 
   <h3>Three sources of events</h3>
@@ -453,7 +518,7 @@ return ("ok", 200)                         # never block on LLM</code></pre>
 
 <!-- 06 PROMPT -->
 <section id="prompt" class="reveal">
-  <h2><span class="num">06</span> Prompt construction</h2>
+  <h2 class="with-src"><span class="num">06</span> Prompt construction <a class="src-link" href="https://github.com/sid8491/dota-coach/blob/master/coach.py#L30" target="_blank" rel="noopener">coach.py · SYSTEM_PROMPT →</a></h2>
   <p>One LLM call is expensive, so we pack each one. The <b>system prompt</b> is fixed; the <b>user message</b> is assembled per-call from the current summary, recent events, recent tips, the running enemy lineup, and the trigger that woke it.</p>
 
   <h3>System prompt — what doesn't change</h3>
@@ -489,7 +554,7 @@ return ("ok", 200)                         # never block on LLM</code></pre>
 
 <!-- 07 OUTPUT QUALITY CONTROL -->
 <section id="quality" class="reveal">
-  <h2><span class="num">07</span> Output quality control</h2>
+  <h2 class="with-src"><span class="num">07</span> Output quality control <a class="src-link" href="https://github.com/sid8491/dota-coach/blob/master/coach.py#L428" target="_blank" rel="noopener">coach.py · _stale_reason →</a></h2>
   <p>The model's response goes through <b>three independent filters</b> before anything is spoken aloud. Each catches a different failure mode. Tips lost here are logged with the reason, so you can see exactly why the coach went quiet.</p>
 
   <div class="grid cols-3" style="margin-top:14px">
@@ -533,7 +598,7 @@ return ("ok", 200)                         # never block on LLM</code></pre>
 
 <!-- 08 CONCURRENCY -->
 <section id="concurrency" class="reveal">
-  <h2><span class="num">08</span> Concurrency &amp; backpressure</h2>
+  <h2 class="with-src"><span class="num">08</span> Concurrency &amp; backpressure <a class="src-link" href="https://github.com/sid8491/dota-coach/blob/master/coach.py#L395" target="_blank" rel="noopener">coach.py · maybe_advise →</a></h2>
   <p>GSI POSTs every ~100 ms. The LLM takes 8–22 s. Without backpressure you'd accumulate a 50-call queue inside a minute. Five mechanisms prevent that.</p>
 
   <div class="gates">
@@ -550,7 +615,7 @@ return ("ok", 200)                         # never block on LLM</code></pre>
 
 <!-- 09 PROVIDER -->
 <section id="provider" class="reveal">
-  <h2><span class="num">09</span> Provider routing</h2>
+  <h2 class="with-src"><span class="num">09</span> Provider routing <a class="src-link" href="https://github.com/sid8491/dota-coach/blob/master/coach.py#L292" target="_blank" rel="noopener">coach.py · _call_llm →</a></h2>
   <p>Default is Ollama (local). Switching to Gemini — or any OpenAI-compatible endpoint (OpenRouter, OpenAI) — is a one-line env var change because dispatch is keyed on the model name.</p>
 
 <pre><code>def _is_gemini_model(model):
@@ -1001,9 +1066,40 @@ python main.py</code></pre>
   </details>
 </section>
 
+<div class="footer-grid">
+  <div class="footer-col">
+    <h5>Repository</h5>
+    <ul>
+      <li><a href="https://github.com/sid8491/dota-coach" target="_blank" rel="noopener">github.com/sid8491/dota-coach</a></li>
+      <li><a href="https://github.com/sid8491/dota-coach#readme" target="_blank" rel="noopener">README — install &amp; troubleshoot</a></li>
+      <li><a href="https://github.com/sid8491/dota-coach/issues" target="_blank" rel="noopener">Issues</a></li>
+      <li><a href="https://github.com/sid8491/dota-coach/commits/master" target="_blank" rel="noopener">Commit history</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h5>Source files</h5>
+    <ul>
+      <li><a href="https://github.com/sid8491/dota-coach/blob/master/main.py" target="_blank" rel="noopener">main.py — Flask entry + orchestrator</a></li>
+      <li><a href="https://github.com/sid8491/dota-coach/blob/master/coach.py" target="_blank" rel="noopener">coach.py — LLM, prompts, filters</a></li>
+      <li><a href="https://github.com/sid8491/dota-coach/blob/master/events.py" target="_blank" rel="noopener">events.py — stateful event differ</a></li>
+      <li><a href="https://github.com/sid8491/dota-coach/blob/master/extract_info.py" target="_blank" rel="noopener">extract_info.py — summary contract</a></li>
+      <li><a href="https://github.com/sid8491/dota-coach/blob/master/tts.py" target="_blank" rel="noopener">tts.py — Piper voice</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h5>External</h5>
+    <ul>
+      <li><a href="https://developer.valvesoftware.com/wiki/Counter-Strike:_Global_Offensive_Game_State_Integration" target="_blank" rel="noopener">Game State Integration docs</a></li>
+      <li><a href="https://ollama.com" target="_blank" rel="noopener">Ollama</a></li>
+      <li><a href="https://github.com/rhasspy/piper" target="_blank" rel="noopener">Piper TTS</a></li>
+      <li><a href="https://github.com/odota/dotaconstants" target="_blank" rel="noopener">OpenDota dotaconstants</a></li>
+    </ul>
+  </div>
+</div>
+
 <footer>
   <span>Dota Coach · single-page architecture case study · no external deps</span>
-  <span class="mute">github.com/sid8491/dota-coach</span>
+  <span class="mute">Built by <a href="https://github.com/sid8491" target="_blank" rel="noopener">@sid8491</a></span>
 </footer>
 
 </div>
