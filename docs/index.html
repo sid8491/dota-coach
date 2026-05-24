@@ -1,0 +1,927 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Dota Coach — Architecture &amp; Developer Guide</title>
+<style>
+  :root{
+    --bg:#0b0f14;
+    --bg2:#0f1620;
+    --panel:#121a25;
+    --panel2:#172230;
+    --ink:#e6edf3;
+    --mute:#8aa0b4;
+    --line:#243345;
+    --accent:#7cdcff;
+    --accent2:#ffd166;
+    --good:#5cd6a6;
+    --warn:#ff8c66;
+    --bad:#ff6188;
+    --code:#a6e3a1;
+    --radiant:#4ade80;
+    --dire:#f87171;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:linear-gradient(180deg,#070a0f 0%,#0b0f14 40%,#0a0d12 100%);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,sans-serif;line-height:1.55}
+  ::selection{background:var(--accent);color:#001220}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  /* layout */
+  .wrap{max-width:1200px;margin:0 auto;padding:48px 28px 120px}
+  header.hero{
+    position:relative;overflow:hidden;border-radius:18px;
+    background:radial-gradient(circle at 10% 10%,#1a3a5c 0%,#0d1622 50%,#0a0d12 100%);
+    padding:56px 40px;margin-bottom:48px;border:1px solid var(--line);
+  }
+  header.hero h1{font-size:42px;margin:0 0 8px;letter-spacing:-0.02em}
+  header.hero .sub{color:var(--mute);max-width:780px}
+  header.hero .tag{display:inline-block;padding:4px 10px;font-size:12px;background:rgba(124,220,255,.1);color:var(--accent);border:1px solid rgba(124,220,255,.3);border-radius:999px;margin-bottom:14px;animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.7}50%{opacity:1}}
+
+  /* floating particles in hero */
+  .particle{position:absolute;width:4px;height:4px;border-radius:50%;background:var(--accent);opacity:.5;animation:float 8s linear infinite}
+  @keyframes float{
+    0%{transform:translate(0,0);opacity:0}
+    20%{opacity:.6}
+    100%{transform:translate(80px,-120px);opacity:0}
+  }
+
+  h2{font-size:26px;margin:56px 0 18px;letter-spacing:-0.01em;display:flex;align-items:center;gap:12px}
+  h2 .num{font-size:14px;color:var(--accent);background:rgba(124,220,255,.08);border:1px solid rgba(124,220,255,.25);border-radius:8px;padding:2px 8px;font-family:ui-monospace,monospace}
+  h3{font-size:18px;margin:28px 0 8px;color:#cfe2f3}
+  p,li{color:#cbd6e2}
+  .mute{color:var(--mute)}
+  code,kbd{font-family:ui-monospace,SF Mono,Menlo,Consolas,monospace;font-size:13px;background:#1a2433;border:1px solid var(--line);border-radius:4px;padding:1px 6px;color:var(--code)}
+  pre{background:#0b1320;border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:13px;line-height:1.55;color:#d6e1ee}
+  pre code{background:none;border:none;padding:0;color:inherit}
+
+  .grid{display:grid;gap:16px}
+  .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  @media (max-width:840px){.grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr}}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 18px 16px;position:relative;transition:transform .25s ease,border-color .25s ease}
+  .card:hover{transform:translateY(-2px);border-color:#365070}
+  .card h4{margin:0 0 6px;font-size:15px;letter-spacing:.02em}
+  .card .badge{position:absolute;top:14px;right:14px;font-size:11px;color:var(--accent);background:rgba(124,220,255,.08);border:1px solid rgba(124,220,255,.25);padding:2px 8px;border-radius:6px;font-family:ui-monospace,monospace}
+
+  /* reveal on scroll */
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  /* pipeline diagram */
+  .pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;align-items:stretch;margin-top:18px}
+  @media (max-width:840px){.pipeline{grid-template-columns:1fr}}
+  .stage{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:16px 14px;position:relative;min-height:160px}
+  .stage .step{font-size:11px;color:var(--accent);font-family:ui-monospace,monospace;letter-spacing:.05em}
+  .stage h4{margin:6px 0 6px;font-size:16px}
+  .stage p{font-size:13px;color:#aab8c8;margin:0}
+  .stage .icon{font-size:22px;margin-bottom:4px;display:inline-block;animation:bob 3.6s ease-in-out infinite}
+  .stage:nth-child(2) .icon{animation-delay:.3s}
+  .stage:nth-child(3) .icon{animation-delay:.6s}
+  .stage:nth-child(4) .icon{animation-delay:.9s}
+  .stage:nth-child(5) .icon{animation-delay:1.2s}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  .arrow-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:10px;padding:0 8%}
+  @media (max-width:840px){.arrow-row{display:none}}
+  .arrow{position:relative;height:8px}
+  .arrow::before{content:"";position:absolute;left:0;top:50%;width:100%;height:2px;background:linear-gradient(90deg,rgba(124,220,255,.0),rgba(124,220,255,.8),rgba(124,220,255,.0));background-size:200% 100%;transform:translateY(-50%);animation:flow 2.4s linear infinite}
+  .arrow::after{content:"▶";position:absolute;right:-4px;top:50%;transform:translateY(-55%);color:var(--accent);font-size:10px;opacity:.9}
+  @keyframes flow{0%{background-position:200% 0}100%{background-position:0 0}}
+
+  /* HLD architecture */
+  .hld{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:16px;position:relative;overflow:hidden}
+  .hld .lane{display:grid;grid-template-columns:180px 1fr;gap:14px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line)}
+  .hld .lane:last-child{border-bottom:none}
+  .hld .lane .label{color:var(--accent);font-family:ui-monospace,monospace;font-size:12px;letter-spacing:.05em}
+  .hld .row{display:flex;gap:10px;flex-wrap:wrap}
+  .hld .box{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;display:flex;align-items:center;gap:8px}
+  .hld .box .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  .hld .box.dota .dot{background:var(--radiant)}
+  .hld .box.flask .dot{background:#ffb86b}
+  .hld .box.llm .dot{background:#c084fc}
+  .hld .box.tts .dot{background:#5cd6a6}
+
+  /* table */
+  table{width:100%;border-collapse:collapse;margin-top:10px;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  th,td{padding:9px 12px;text-align:left;font-size:13px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#0e1622;color:var(--accent);font-weight:600;font-family:ui-monospace,monospace;letter-spacing:.05em;font-size:11px;text-transform:uppercase}
+  tr:last-child td{border-bottom:none}
+  td code{font-size:12px}
+
+  /* event chips */
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .chip{font-family:ui-monospace,monospace;font-size:12px;padding:4px 9px;border-radius:6px;border:1px solid var(--line);background:#142031;color:#cfe2f3;cursor:default;transition:all .2s}
+  .chip:hover{background:#1c2c44;border-color:#365070;transform:translateY(-1px)}
+  .chip.dot::before{content:"●";color:var(--accent);margin-right:6px;font-size:10px}
+  .chip.warn::before{color:var(--warn)}
+  .chip.bad::before{color:var(--bad)}
+  .chip.good::before{color:var(--good)}
+
+  /* tick simulator */
+  .ticker{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:18px;position:relative;overflow:hidden}
+  .ticker .heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .ticker .heading h4{margin:0;font-size:14px}
+  .ticker .led{width:10px;height:10px;border-radius:50%;background:var(--good);box-shadow:0 0 8px var(--good);animation:blink 1.2s ease-in-out infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+  .ticker pre{margin:0;max-height:240px;overflow:hidden;position:relative}
+  .ticker pre::after{content:"";position:absolute;left:0;right:0;bottom:0;height:50px;background:linear-gradient(180deg,rgba(11,19,32,0),rgba(11,19,32,1))}
+  .line-in{animation:lineIn .35s ease-out both}
+  @keyframes lineIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+
+  /* trigger funnel */
+  .funnel{margin-top:18px}
+  .funnel .step{display:grid;grid-template-columns:200px 1fr 90px;gap:16px;align-items:center;padding:10px 14px;background:var(--panel);border:1px solid var(--line);border-radius:10px;margin-bottom:8px;position:relative}
+  .funnel .step .name{font-family:ui-monospace,monospace;font-size:13px;color:var(--accent)}
+  .funnel .step .desc{font-size:13px;color:#cbd6e2}
+  .funnel .step .out{font-family:ui-monospace,monospace;font-size:11px;color:var(--mute);text-align:right}
+  .funnel .step::before{content:"";position:absolute;left:-2px;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--accent),transparent);border-radius:3px;opacity:.5}
+  .funnel .step.drop::before{background:linear-gradient(180deg,var(--bad),transparent)}
+  .funnel .step.pass::before{background:linear-gradient(180deg,var(--good),transparent)}
+
+  /* prompt anatomy */
+  .prompt{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:0;overflow:hidden}
+  .prompt .block{padding:12px 14px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:180px 1fr;gap:12px;font-size:13px;align-items:flex-start}
+  .prompt .block:last-child{border-bottom:none}
+  .prompt .block .key{color:var(--accent2);font-family:ui-monospace,monospace;font-size:12px}
+  .prompt .block .val{color:#d6e1ee;font-family:ui-monospace,monospace;font-size:12px;white-space:pre-wrap}
+
+  /* env vars */
+  .env-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+  @media (max-width:840px){.env-grid{grid-template-columns:1fr}}
+  .env{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-family:ui-monospace,monospace;font-size:12px}
+  .env .k{color:var(--accent)}
+  .env .d{color:var(--mute);font-size:11px;margin-top:4px;font-family:inherit}
+
+  /* file tree */
+  .tree{font-family:ui-monospace,monospace;font-size:13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 18px;color:#cfe2f3;white-space:pre;overflow-x:auto;line-height:1.7}
+  .tree .anno{color:var(--mute)}
+
+  /* TOC */
+  nav.toc{position:sticky;top:14px;z-index:5;background:rgba(11,15,20,.85);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:6px 10px;font-size:12px;margin-bottom:24px}
+  nav.toc a{color:#aab8c8;padding:3px 8px;border-radius:6px;border:1px solid transparent;font-family:ui-monospace,monospace}
+  nav.toc a:hover{background:#142031;color:var(--accent);border-color:var(--line);text-decoration:none}
+
+  /* footer */
+  footer{margin-top:80px;padding-top:24px;border-top:1px solid var(--line);color:var(--mute);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+  /* visualization of summary contract */
+  .summary-vis{margin-top:18px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media (max-width:840px){.summary-vis{grid-template-columns:1fr}}
+  .summary-vis .col h4{margin:0 0 8px}
+  .summary-vis ul{list-style:none;padding:0;margin:0;font-family:ui-monospace,monospace;font-size:12.5px}
+  .summary-vis li{padding:3px 8px;border-left:2px solid var(--line);margin:3px 0;color:#d6e1ee}
+  .summary-vis li b{color:var(--accent2);font-weight:600}
+  .summary-vis li .t{color:var(--mute);font-size:11px;margin-left:6px}
+
+  /* throttle gates visual */
+  .gates{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}
+  @media (max-width:840px){.gates{grid-template-columns:repeat(2,1fr)}}
+  .gate{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;text-align:center;font-size:13px;overflow:hidden}
+  .gate .ico{font-size:22px;display:block;margin-bottom:4px}
+  .gate b{display:block;font-size:13px;color:#cfe2f3}
+  .gate small{color:var(--mute);font-size:11px;display:block;margin-top:2px}
+  .gate::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--accent),transparent);opacity:.5}
+
+  details{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-top:10px}
+  details summary{cursor:pointer;color:var(--accent);font-family:ui-monospace,monospace;font-size:13px;outline:none}
+  details[open] summary{margin-bottom:8px}
+
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--mute)}
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .legend i{width:9px;height:9px;border-radius:2px;display:inline-block;background:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <span class="tag">DOTA COACH · ARCHITECTURE</span>
+  <h1>A local Dota&nbsp;2 coaching assistant</h1>
+  <p class="sub">Dota's Game State Integration streams JSON to a local Flask server. Each tick is summarized, diffed against the previous tick, gated through cooldowns &amp; freshness checks, sent to a local LLM via Ollama, and spoken aloud by Piper&nbsp;TTS — without ever blocking the GSI POST.</p>
+  <!-- particles -->
+  <span class="particle" style="left:12%;bottom:20px;animation-delay:0s"></span>
+  <span class="particle" style="left:26%;bottom:10px;animation-delay:1.4s"></span>
+  <span class="particle" style="left:48%;bottom:30px;animation-delay:2.7s"></span>
+  <span class="particle" style="left:67%;bottom:18px;animation-delay:0.9s"></span>
+  <span class="particle" style="left:82%;bottom:24px;animation-delay:3.5s"></span>
+  <span class="particle" style="left:91%;bottom:8px;animation-delay:5.1s"></span>
+</header>
+
+<nav class="toc">
+  <a href="#overview">01 · Overview</a>
+  <a href="#hld">02 · HLD</a>
+  <a href="#flow">03 · Flow</a>
+  <a href="#gsi">04 · GSI Input</a>
+  <a href="#summary">05 · Summary Contract</a>
+  <a href="#events">06 · Events</a>
+  <a href="#coach">07 · Coach Pipeline</a>
+  <a href="#prompt">08 · LLM Prompt</a>
+  <a href="#tts">09 · TTS</a>
+  <a href="#logger">10 · Logger</a>
+  <a href="#constants">11 · Constants</a>
+  <a href="#config">12 · Config</a>
+  <a href="#files">13 · Layout</a>
+  <a href="#extend">14 · Extending</a>
+</nav>
+
+<!-- 01 OVERVIEW -->
+<section id="overview" class="reveal">
+  <h2><span class="num">01</span> What this project is</h2>
+  <p>Dota Coach is a Windows-only Python process that listens to <b>Dota 2's Game State Integration (GSI)</b> on <code>127.0.0.1:8000</code>, turns each game tick into a flat summary, watches for moments worth coaching (death, low HP/mana, ult ready, missing enemies, periodic check-in, …), and asks a local LLM via <b>Ollama</b> (or Gemini) for a one-line tactical tip. The tip is logged and read aloud through <b>Piper&nbsp;TTS</b>.</p>
+
+  <div class="grid cols-4" style="margin-top:18px">
+    <div class="card"><span class="badge">INPUT</span><h4>Dota GSI</h4><p class="mute" style="font-size:13px;margin:0">Game client POSTs JSON every ~100&nbsp;ms with map, hero, items, abilities, minimap, buildings, events.</p></div>
+    <div class="card"><span class="badge">SERVER</span><h4>Flask + thread</h4><p class="mute" style="font-size:13px;margin:0">One endpoint <code>POST /gsi/</code>. Returns 200 immediately. LLM work runs on a daemon thread.</p></div>
+    <div class="card"><span class="badge">BRAIN</span><h4>Local LLM</h4><p class="mute" style="font-size:13px;margin:0">Ollama by default (<code>qwen3.6:27b</code> / <code>gemma4:e4b</code>). Gemini supported via OpenAI-compat endpoint.</p></div>
+    <div class="card"><span class="badge">OUTPUT</span><h4>Piper voice</h4><p class="mute" style="font-size:13px;margin:0">Synthesized to a temp WAV and played through <code>winsound</code> so you don't have to read mid-fight.</p></div>
+  </div>
+
+  <div class="legend">
+    <span><i style="background:var(--radiant)"></i> Dota client</span>
+    <span><i style="background:#ffb86b"></i> Flask server</span>
+    <span><i style="background:#c084fc"></i> LLM (Ollama / Gemini)</span>
+    <span><i style="background:var(--good)"></i> Piper TTS</span>
+  </div>
+</section>
+
+<!-- 02 HLD -->
+<section id="hld" class="reveal">
+  <h2><span class="num">02</span> High-Level Design</h2>
+  <p>Five Python modules; each lane below is one of them. Data flows top-to-bottom on every tick.</p>
+  <div class="hld">
+    <div class="lane">
+      <div class="label">EXTERNAL</div>
+      <div class="row">
+        <div class="box dota"><span class="dot"></span>Dota 2 client (GSI)</div>
+        <div class="box dota"><span class="dot"></span>cfg file under <code>gamestate_integration/</code></div>
+        <div class="box llm"><span class="dot"></span>Ollama daemon (port 11434)</div>
+        <div class="box llm"><span class="dot"></span>Gemini API (optional)</div>
+      </div>
+    </div>
+    <div class="lane">
+      <div class="label">main.py</div>
+      <div class="row">
+        <div class="box flask"><span class="dot"></span>Flask <code>POST /gsi/</code></div>
+        <div class="box flask"><span class="dot"></span>token auth</div>
+        <div class="box flask"><span class="dot"></span>per-tick orchestrator</div>
+        <div class="box flask"><span class="dot"></span>30s console snapshot</div>
+      </div>
+    </div>
+    <div class="lane">
+      <div class="label">extract_info.py</div>
+      <div class="row">
+        <div class="box"><span class="dot"></span><code>filter_minimap()</code></div>
+        <div class="box"><span class="dot"></span><code>summarize()</code> &nbsp;→&nbsp; flat dict <i>(the cross-module contract)</i></div>
+        <div class="box"><span class="dot"></span><code>print_snapshot()</code></div>
+      </div>
+    </div>
+    <div class="lane">
+      <div class="label">events.py</div>
+      <div class="row">
+        <div class="box"><span class="dot"></span><code>EventDiffer</code> (stateful prev/curr)</div>
+        <div class="box"><span class="dot"></span>debounced status/vision sets</div>
+        <div class="box"><span class="dot"></span>server-event dedup set (cap 500)</div>
+        <div class="box"><span class="dot"></span>slot→hero inference</div>
+        <div class="box"><span class="dot"></span>derived: <code>enemies_missing</code>, <code>periodic_check</code></div>
+      </div>
+    </div>
+    <div class="lane">
+      <div class="label">coach.py</div>
+      <div class="row">
+        <div class="box"><span class="dot"></span><code>maybe_advise()</code> gate</div>
+        <div class="box"><span class="dot"></span><code>_pick_trigger()</code></div>
+        <div class="box"><span class="dot"></span><code>_build_prompt()</code></div>
+        <div class="box llm"><span class="dot"></span><code>_call_llm()</code> → Ollama or Gemini</div>
+        <div class="box"><span class="dot"></span>freshness + dedup filters</div>
+      </div>
+    </div>
+    <div class="lane">
+      <div class="label">tts.py</div>
+      <div class="row">
+        <div class="box tts"><span class="dot"></span><code>PiperVoice</code></div>
+        <div class="box tts"><span class="dot"></span>temp WAV → <code>winsound.PlaySound</code></div>
+        <div class="box"><span class="dot"></span><code>TTS_DISABLED</code> kill switch</div>
+      </div>
+    </div>
+    <div class="lane">
+      <div class="label">logger.py + constants.py</div>
+      <div class="row">
+        <div class="box"><span class="dot"></span>tee stdout/stderr → <code>session_*.log</code></div>
+        <div class="box"><span class="dot"></span><code>switch_to_match(matchid)</code> renames log</div>
+        <div class="box"><span class="dot"></span>OpenDota items/heroes/abilities JSON lookups</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 FLOW -->
+<section id="flow" class="reveal">
+  <h2><span class="num">03</span> End-to-end flow (per tick)</h2>
+  <p>The pipeline is <b>one-way per request</b>. The Flask handler returns 200 immediately; the LLM call happens off-thread so a slow model never blocks GSI.</p>
+
+  <div class="pipeline">
+    <div class="stage"><span class="step">STAGE 01</span><span class="icon">🎮</span><h4>GSI POST</h4><p>Dota client POSTs JSON ~10×/sec to <code>http://127.0.0.1:8000/gsi/</code> with auth token.</p></div>
+    <div class="stage"><span class="step">STAGE 02</span><span class="icon">🧹</span><h4>Summarize</h4><p><code>filter_minimap</code> drops ward/creep/rune icons. <code>summarize()</code> flattens to a contract dict.</p></div>
+    <div class="stage"><span class="step">STAGE 03</span><span class="icon">📊</span><h4>Diff &amp; emit events</h4><p><code>EventDiffer.process</code> compares prev↔curr, emits typed events (<code>death</code>, <code>low_hp</code>, …).</p></div>
+    <div class="stage"><span class="step">STAGE 04</span><span class="icon">🧠</span><h4>Gate + LLM</h4><p><code>Coach.maybe_advise</code> applies cooldowns + inflight guard, picks one trigger, calls LLM on a thread.</p></div>
+    <div class="stage"><span class="step">STAGE 05</span><span class="icon">🔊</span><h4>Filter + speak</h4><p>Drop <code>OK</code>, stale, or duplicate tips. Survivors → log + Piper TTS.</p></div>
+  </div>
+  <div class="arrow-row">
+    <div class="arrow"></div><div class="arrow"></div><div class="arrow"></div><div class="arrow"></div>
+  </div>
+
+  <h3 style="margin-top:34px">main.gsi() in code form</h3>
+<pre><code>data    = request.get_json(...)            # raw GSI tick
+auth    = data["auth"]["token"]            # 401 on mismatch
+data["minimap"] = filter_minimap(...)      # drop wards/runes/creeps
+curr    = summarize(data)                  # → flat dict contract
+matchid = curr["matchid"]                  # → rotate log if new match
+events  = differ.process(curr)             # stateful diff
+coach.maybe_advise(curr, events)           # → daemon thread for LLM
+print_snapshot(curr)  # every 30s in ACTIVE_GAME_STATES
+return ("ok", 200)                         # never block on LLM</code></pre>
+
+  <div class="ticker">
+    <div class="heading"><h4>Sample console output (live tick stream)</h4><span class="led"></span></div>
+<pre id="tickerOut"></pre>
+  </div>
+</section>
+
+<!-- 04 GSI INPUT -->
+<section id="gsi" class="reveal">
+  <h2><span class="num">04</span> What Dota sends (GSI input)</h2>
+  <p>Dota 2 loads <code>gamestate_integration_coach.cfg</code> at startup and starts POSTing JSON to your local URL. You ask for the fields you want; the coach asks for everything actionable. The cfg lives under:</p>
+<pre><code>C:\Program Files (x86)\Steam\steamapps\common\dota 2 beta\game\dota\cfg\gamestate_integration\</code></pre>
+
+  <div class="grid cols-2" style="margin-top:14px">
+    <div class="card"><h4>Server cfg knobs</h4>
+      <ul style="font-size:13px;margin:6px 0 0 18px;padding:0">
+        <li><code>uri</code> — local endpoint (<code>http://127.0.0.1:8000/gsi/</code>)</li>
+        <li><code>timeout</code> 5s · <code>buffer</code> 0.1s · <code>throttle</code> 0.5s · <code>heartbeat</code> 30s</li>
+        <li><code>auth.token</code> — must match <code>DOTA2_GSI_TOKEN</code> env (or the default)</li>
+      </ul>
+    </div>
+    <div class="card"><h4>Data sections requested</h4>
+      <div class="chips" style="margin-top:6px">
+        <span class="chip dot">buildings</span><span class="chip dot">provider</span>
+        <span class="chip dot">map</span><span class="chip dot">player</span>
+        <span class="chip dot">hero</span><span class="chip dot">abilities</span>
+        <span class="chip dot">items</span><span class="chip dot">draft</span>
+        <span class="chip dot">minimap</span><span class="chip dot">roshan</span>
+        <span class="chip dot">couriers</span><span class="chip dot">neutralitems</span>
+        <span class="chip dot">events</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>Raw GSI JSON shape (abridged)</h3>
+<pre><code>{
+  "provider": { "name": "Dota 2", "appid": 570, "timestamp": ... },
+  "map":      { "matchid": "8123…", "clock_time": 612, "game_time": 658,
+                "daytime": true, "game_state": "DOTA_GAMERULES_STATE_GAME_IN_PROGRESS",
+                "paused": false, "radiant_score": 7, "dire_score": 11 },
+  "player":   { "name": "...", "team_name": "radiant", "player_slot": 2,
+                "kills":3, "deaths":1, "assists":4, "last_hits":56, "denies":4,
+                "gold":1320, "gpm":420, "xpm":510 },
+  "hero":     { "name": "npc_dota_hero_sniper", "level":9, "alive":true,
+                "health_percent":74, "mana_percent":52, "xpos":1280, "ypos":-310,
+                "silenced":false, "stunned":false, ...,
+                "talent_1":false, ..., "aghanims_scepter":false, "aghanims_shard":false,
+                "facet":1 },
+  "abilities":{ "ability0": {"name":"sniper_shrapnel","level":3,"cooldown":12,
+                              "ultimate":false,"can_cast":true,"passive":false}, ... },
+  "items":    { "slot0": {"name":"item_dragon_lance","cooldown":0,"charges":null}, ... },
+  "buildings":{ "radiant": { "dota_goodguys_tower1_top": {...}, ... },
+                "dire":    { ... } },
+  "minimap":  { "o0": {"image":"minimap_herocircle","name":"npc_dota_hero_lina","xpos":...},
+                "o1": {"image":"minimap_enemyicon","name":"npc_dota_hero_lion","xpos":...},
+                ...   <i>// wards, creeps, runes filtered out by filter_minimap()</i> },
+  "roshan":   { "health":3000, "max_health":5500, ... },
+  "events":   [ {"event_type":"roshan_killed","killed_by_team":3, ...},
+                {"event_type":"generic_event","data":"{\"type\":\"CHAT_MESSAGE_HERO_KILL\",
+                                                       \"playerid1\":4,\"playerid2\":0,
+                                                       \"value\":260}"} ],
+  "couriers": {...}, "neutralitems": {...}, "draft": {...},
+  "auth":     { "token": "my_super_secret_token_123!" }
+}</code></pre>
+
+  <h3 style="margin-top:30px">GSI field → where we use it → why</h3>
+  <p class="mute" style="font-size:13px">Mapping every field we consume against the module that reads it and the user-visible behavior it drives. Fields marked <span style="color:var(--mute)">·</span> are requested from Dota but currently parsed-and-stored only (no downstream consumer yet).</p>
+
+  <table>
+    <tr><th style="width:24%">GSI path</th><th style="width:22%">Stored in summary as</th><th style="width:20%">Read by</th><th>Purpose</th></tr>
+
+    <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.08em">▸ MAP</td></tr>
+    <tr><td><code>map.matchid</code></td><td><code>matchid</code></td><td>main.py · events.py</td><td>Rotate <code>session_*.log</code> → <code>&lt;matchid&gt;.log</code>; trigger <code>EventDiffer._reset()</code> on match change; reset per-match <code>recommended_items</code> in Coach.</td></tr>
+    <tr><td><code>map.clock_time</code></td><td><code>clock</code></td><td>events.py · coach.py</td><td>Stamped on every event; gates <code>MIN_INTERVAL_SEC</code> / <code>PER_TRIGGER_COOLDOWN_SEC</code>; drives <code>_game_phase()</code> (PRE/EARLY/MID/LATE) and periodic-check timing; pre-game guard (<code>clock &lt; 0</code> skips derived triggers).</td></tr>
+    <tr><td><code>map.game_time</code></td><td><code>game_time</code></td><td><span class="mute">·</span></td><td>Captured but not currently consumed downstream.</td></tr>
+    <tr><td><code>map.daytime</code></td><td><code>daytime</code></td><td>events.py · coach.py</td><td>Emits <code>time_of_day</code> event on flip; injected into prompt as "day"/"night".</td></tr>
+    <tr><td><code>map.game_state</code></td><td><code>game_state</code></td><td>main.py · events.py</td><td>Diffing only runs when both prev &amp; curr are in <code>ACTIVE_GAME_STATES</code>; gates the 30 s console snapshot; emits <code>game_state</code> event on transitions.</td></tr>
+    <tr><td><code>map.paused</code></td><td><code>paused</code></td><td>events.py</td><td>Emits <code>pause</code> event on flip.</td></tr>
+    <tr><td><code>map.radiant_score</code> / <code>dire_score</code></td><td><code>score.radiant</code> / <code>score.dire</code></td><td>events.py · coach.py</td><td>Diff detects kills on either team → emits <code>team_kill</code>; surfaced in prompt as <code>R{r}-D{d}</code>.</td></tr>
+
+    <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.08em">▸ PLAYER</td></tr>
+    <tr><td><code>player.name</code></td><td><code>player.name</code></td><td><span class="mute">·</span></td><td>Captured; not currently used.</td></tr>
+    <tr><td><code>player.team_name</code></td><td><code>player.team</code></td><td>extract_info · events · coach</td><td>Used by <code>slot_side()</code> to bucket every 0–9 slot into self / ally / enemy; classifies which side a tower/rax kill belongs to.</td></tr>
+    <tr><td><code>player.player_slot</code></td><td><code>player.player_slot</code></td><td>events.py</td><td>Anchor for slot→hero map; passed to <code>slot_side()</code> on every server event.</td></tr>
+    <tr><td><code>player.kills</code> / <code>deaths</code> / <code>assists</code></td><td><code>player.kills/deaths/assists</code></td><td>events.py · coach.py</td><td>Diff emits <code>kill</code> / <code>death</code> / <code>assist</code> events; surfaced in prompt as K/D/A.</td></tr>
+    <tr><td><code>player.last_hits</code> / <code>denies</code></td><td><code>player.last_hits/denies</code></td><td>coach.py</td><td>Surfaced in prompt as CS line.</td></tr>
+    <tr><td><code>player.gold</code> / <code>gpm</code> / <code>xpm</code></td><td><code>player.gold/gpm/xpm</code></td><td>coach.py</td><td>Surfaced in prompt — model needs gold for "build [item] next" recommendations.</td></tr>
+
+    <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.08em">▸ HERO</td></tr>
+    <tr><td><code>hero.name</code></td><td><code>self.hero</code></td><td>events.py · coach.py</td><td>Seeds <code>slot_to_hero</code> for the player; identifies hero in prompt via <code>hero_info()</code> (dname + roles + attribute).</td></tr>
+    <tr><td><code>hero.facet</code></td><td><code>self.facet</code></td><td>coach.py</td><td>Surfaced in prompt — facets change ability behavior, model needs to know which is picked.</td></tr>
+    <tr><td><code>hero.level</code></td><td><code>self.level</code></td><td>events.py · coach.py</td><td>Diff emits <code>level_up</code> (filtered against <code>LEVEL_UP_MILESTONES</code>); surfaced in prompt.</td></tr>
+    <tr><td><code>hero.xp</code></td><td><code>self.xp</code></td><td><span class="mute">·</span></td><td>Captured; not consumed.</td></tr>
+    <tr><td><code>hero.alive</code></td><td><code>self.alive</code></td><td>events.py · coach.py</td><td>Diff emits <code>died</code> / <code>respawn</code>; <code>_stale_reason()</code> drops post-respawn <code>death</code> tips.</td></tr>
+    <tr><td><code>hero.respawn_seconds</code></td><td><code>self.respawn</code></td><td>events.py</td><td>Included in the <code>died</code> event message ("respawn in Ns").</td></tr>
+    <tr><td><code>hero.buyback_cost</code> / <code>buyback_cooldown</code></td><td><code>self.buyback_cost/cd</code></td><td><span class="mute">·</span></td><td>Captured; not yet surfaced in the prompt (good candidate to add for the <code>death</code> trigger).</td></tr>
+    <tr><td><code>hero.health_percent</code></td><td><code>self.hp_pct</code></td><td>events.py · coach.py</td><td>Crosses <code>LOW_HP_PCT=30</code> → emits <code>low_hp</code>; <code>_stale_reason()</code> drops the tip if HP ≥ <code>FRESH_HP_RECOVERED_PCT=60</code>; surfaced in prompt.</td></tr>
+    <tr><td><code>hero.mana_percent</code></td><td><code>self.mp_pct</code></td><td>events.py · coach.py</td><td>Same pattern with <code>LOW_MP_PCT=20</code> and <code>FRESH_MP_RECOVERED_PCT=50</code>.</td></tr>
+    <tr><td><code>hero.health</code> / <code>mana</code></td><td><code>self.hp</code> / <code>self.mp</code></td><td><span class="mute">·</span></td><td>Absolute values captured; only percentages are used.</td></tr>
+    <tr><td><code>hero.xpos</code> / <code>ypos</code></td><td><code>self.pos</code></td><td>coach.py</td><td>Fed into <code>_classify_lane(x,y)</code> for the prompt's "position: &lt;lane&gt;" line.</td></tr>
+    <tr><td><code>hero.silenced/stunned/disarmed/magicimmune/hexed/muted/break/smoked</code></td><td><code>self.status</code> (subset)</td><td>events.py · coach.py</td><td>Debounced (<code>STATUS_DEBOUNCE_SEC=2</code>) → <code>status_on</code> / <code>status_off</code>; current set surfaced in prompt as <code>status: …</code>.</td></tr>
+    <tr><td><code>hero.talent_1..8</code></td><td><code>self.talents</code></td><td>events.py</td><td>New picks → <code>talent</code> event ("Picked talent #N").</td></tr>
+    <tr><td><code>hero.aghanims_scepter</code> / <code>aghanims_shard</code></td><td><code>self.aghs</code> / <code>self.shard</code></td><td>events.py</td><td>False → True flip emits <code>aghs</code> / <code>shard</code> events.</td></tr>
+
+    <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.08em">▸ ABILITIES</td></tr>
+    <tr><td><code>abilities.slotN.name</code></td><td><code>abilities[].name</code></td><td>coach.py</td><td>Resolved via <code>ability_dname()</code> + <code>ability_desc()</code> into the "Your abilities" prompt block — anchors the "only suggest abilities listed here" rule.</td></tr>
+    <tr><td><code>abilities.slotN.level</code></td><td><code>abilities[].level</code></td><td>coach.py</td><td>Shown per ability in the prompt.</td></tr>
+    <tr><td><code>abilities.slotN.cooldown</code></td><td><code>abilities[].cooldown</code></td><td>events.py · coach.py</td><td>For ultimates: prev&gt;0 → 0 emits <code>ult_ready</code>. All abilities: shown as "off cd" or "ON CD Xs" in prompt.</td></tr>
+    <tr><td><code>abilities.slotN.ultimate</code></td><td><code>abilities[].ultimate</code></td><td>events.py</td><td>Filters the <code>ult_ready</code> diff to ultimates only.</td></tr>
+    <tr><td><code>abilities.slotN.can_cast</code> / <code>passive</code></td><td><code>abilities[].can_cast/passive</code></td><td>coach.py</td><td><code>passive</code> tag shown next to ability name in prompt.</td></tr>
+
+    <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.08em">▸ ITEMS</td></tr>
+    <tr><td><code>items.slotN.name</code></td><td><code>items[].name</code></td><td>events.py · coach.py</td><td>Equipped-slot diff emits <code>item_added</code> / <code>item_removed</code>; dnames listed in prompt — anchors the "only suggest items listed" rule.</td></tr>
+    <tr><td><code>items.slotN.cooldown</code> / <code>charges</code></td><td><code>items[].cooldown/charges</code></td><td><span class="mute">·</span></td><td>Captured; not currently surfaced (good candidate for "blink off cd → engage" tips).</td></tr>
+
+    <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.08em">▸ BUILDINGS</td></tr>
+    <tr><td><code>buildings.&lt;our_team&gt;</code> (keys)</td><td><code>our_buildings</code></td><td>events.py</td><td>Set diff emits <code>our_building_fell</code> when a key disappears (T1 down, rax down, etc.).</td></tr>
+    <tr><td><code>buildings.&lt;enemy_team&gt;</code></td><td><span class="mute">— (filtered via minimap instead)</span></td><td><span class="mute">·</span></td><td>Enemy buildings are tracked through visible minimap tower icons, not the buildings dict.</td></tr>
+
+    <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.08em">▸ MINIMAP &nbsp;(after <code>filter_minimap()</code>)</td></tr>
+    <tr><td><code>minimap.* image=minimap_herocircle</code></td><td><code>allies[]</code> (hero + pos)</td><td>coach.py</td><td>Surfaced as "Allies in vision (lane shown)" in the prompt.</td></tr>
+    <tr><td><code>minimap.* image=minimap_enemyicon</code></td><td><code>enemies[]</code> + <code>enemies_seen_count</code> + <code>enemies_missing</code></td><td>events.py · coach.py</td><td>Vision debounce (<code>VISION_DEBOUNCE_SEC=3</code>) → <code>enemy_seen</code> / <code>enemy_lost</code>; <code>enemies_missing ≥ 2</code> sustained <code>5 s</code> → <code>enemies_missing</code> event; populates <code>seen_enemy_heroes</code> (the full <code>enemy_lineup</code>); used by <code>_stale_reason()</code> (drop if &lt; 2 missing now); surfaced in prompt.</td></tr>
+    <tr><td><code>minimap.* image=minimap_tower*/racks*/ancient</code> (enemy team)</td><td><code>enemy_buildings_visible</code></td><td><span class="mute">·</span></td><td>Captured; not currently fed to the prompt.</td></tr>
+    <tr><td><code>minimap.* image=minimap_courier_*</code></td><td><span class="mute">— (whitelisted, not used)</span></td><td><span class="mute">·</span></td><td>Whitelisted in <code>filter_minimap</code> so future code can use it; no consumer yet.</td></tr>
+
+    <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.08em">▸ ROSHAN</td></tr>
+    <tr><td><code>roshan</code></td><td><code>roshan</code></td><td>events.py</td><td>JSON-equality diff emits a <code>roshan</code> event whenever any field changes (HP, alive_in, items_held).</td></tr>
+
+    <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.08em">▸ EVENTS &nbsp;(server-side; dedup'd, capped at 500)</td></tr>
+    <tr><td><code>event_type=roshan_killed</code></td><td><code>events[]</code></td><td>events.py</td><td>Emits <code>roshan_killed</code> with side + killer slot — wakes the LLM (rosh / aegis management).</td></tr>
+    <tr><td><code>event_type=aegis_picked_up</code></td><td><code>events[]</code></td><td>events.py</td><td>Emits <code>aegis_picked_up</code> ("snatched" vs "picked up").</td></tr>
+    <tr><td><code>generic_event → CHAT_MESSAGE_HERO_KILL / FIRSTBLOOD</code></td><td><code>events[]</code></td><td>events.py</td><td>Emits <code>hero_kill</code> / <code>first_blood</code>; <em>also</em> drives slot→hero inference: if exactly one hero of the victim's side just vanished from the minimap, map the victim slot to that hero.</td></tr>
+    <tr><td><code>generic_event → CHAT_MESSAGE_ITEM_PURCHASE</code></td><td><code>events[]</code></td><td>events.py</td><td>Emits <code>item_purchase</code> for non-self players (self purchases already produce <code>item_added</code>). Item id resolved via <code>constants.item_name()</code>.</td></tr>
+    <tr><td><code>generic_event → CHAT_MESSAGE_TOWER_KILL / BARRACKS_KILL</code></td><td><code>events[]</code></td><td>events.py</td><td>Emits <code>tower_kill</code> / <code>barracks_kill</code> with "ours"/"theirs" classification from the <code>value</code> field (2=radiant did it, 3=dire did it).</td></tr>
+    <tr><td><code>generic_event → CHAT_MESSAGE_OBSERVER_WARD_KILLED</code></td><td><code>events[]</code></td><td>events.py</td><td>Emits <code>ward_killed</code> with killer + owner slots.</td></tr>
+    <tr><td><code>generic_event → CHAT_MESSAGE_COURIER_LOST / RESPAWNED</code></td><td><code>events[]</code></td><td>events.py</td><td>Emits <code>courier_lost</code> / <code>courier_respawned</code>.</td></tr>
+    <tr><td>any other server event</td><td><code>events[]</code></td><td>events.py</td><td>Emitted as generic <code>server_event</code> with raw payload — logged but not in <code>TRIGGER_TYPES</code>, so it doesn't wake the LLM.</td></tr>
+
+    <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.08em">▸ CAPTURED BUT UNUSED</td></tr>
+    <tr><td><code>couriers</code></td><td><code>couriers</code></td><td><span class="mute">·</span></td><td>Raw passthrough; no consumer.</td></tr>
+    <tr><td><code>neutralitems</code></td><td><code>neutralitems</code></td><td><span class="mute">·</span></td><td>Raw passthrough; no consumer.</td></tr>
+    <tr><td><code>draft</code></td><td><span class="mute">— (not in summary)</span></td><td><span class="mute">·</span></td><td>Requested in the cfg but never read by <code>summarize()</code> — useful future signal for draft-phase advice.</td></tr>
+    <tr><td><code>provider</code></td><td><span class="mute">— (not in summary)</span></td><td><span class="mute">·</span></td><td>Bookkeeping only (appid, timestamp).</td></tr>
+
+    <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.08em">▸ AUTH</td></tr>
+    <tr><td><code>auth.token</code></td><td><span class="mute">— (not in summary)</span></td><td>main.py</td><td>Compared against <code>DOTA2_GSI_TOKEN</code>; mismatch returns 401.</td></tr>
+  </table>
+
+  <p class="mute" style="font-size:12.5px;margin-top:14px">Two derived fields appear in the summary that aren't direct GSI passthroughs: <code>enemies_seen_count</code> / <code>enemies_missing</code> are computed from the minimap; <code>enemy_lineup</code> is the running union of every enemy hero ever spotted (added by <code>main.py</code> after <code>differ.process()</code>).</p>
+
+  <h3 style="margin-top:30px">What gets thrown away early</h3>
+  <p><code>filter_minimap()</code> keeps only these icon types — everything else (ward icons, creep waves, rune icons, glyphs) is dropped <em>before</em> <code>summarize()</code> sees the tick, to cut prompt size and CPU:</p>
+  <div class="chips">
+    <span class="chip">minimap_herocircle</span>
+    <span class="chip">minimap_herocircle_self</span>
+    <span class="chip">minimap_enemyicon</span>
+    <span class="chip">minimap_courier_flying</span>
+    <span class="chip">minimap_courier_ground</span>
+    <span class="chip">minimap_tower45</span>
+    <span class="chip">minimap_tower90</span>
+    <span class="chip">minimap_racks45</span>
+    <span class="chip">minimap_racks90</span>
+    <span class="chip">minimap_ancient</span>
+  </div>
+</section>
+
+<!-- 05 SUMMARY CONTRACT -->
+<section id="summary" class="reveal">
+  <h2><span class="num">05</span> The Summary contract</h2>
+  <p>The dict returned by <code>summarize()</code> is the <b>cross-module contract</b>. <code>EventDiffer</code>, <code>Coach._build_prompt</code>, and <code>print_snapshot</code> all read it. Add a field here and update all three together.</p>
+
+  <div class="summary-vis">
+    <div class="col">
+      <h4>Top-level scalars</h4>
+      <ul>
+        <li><b>matchid</b><span class="t">str — used to rotate the per-match log</span></li>
+        <li><b>clock</b><span class="t">int — seconds; negative during pre-game</span></li>
+        <li><b>game_time</b><span class="t">int — absolute server clock</span></li>
+        <li><b>daytime</b><span class="t">bool</span></li>
+        <li><b>game_state</b><span class="t">DOTA_GAMERULES_STATE_*</span></li>
+        <li><b>paused</b><span class="t">bool</span></li>
+        <li><b>score</b><span class="t">{radiant:int, dire:int}</span></li>
+        <li><b>enemies_seen_count</b><span class="t">0..5</span></li>
+        <li><b>enemies_missing</b><span class="t">5 - seen</span></li>
+        <li><b>our_buildings</b><span class="t">list of unit names alive on our side</span></li>
+        <li><b>enemy_buildings_visible</b><span class="t">enemy towers in our vision</span></li>
+        <li><b>enemy_lineup</b><span class="t">union of every enemy hero seen so far (added by main.py)</span></li>
+        <li><b>roshan</b><span class="t">raw GSI roshan dict</span></li>
+        <li><b>events</b><span class="t">raw GSI server events (dedup'd downstream)</span></li>
+        <li><b>couriers</b> · <b>neutralitems</b><span class="t">raw GSI passthrough</span></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>self / player / inventories</h4>
+      <ul>
+        <li><b>self.hero</b><span class="t">short name (e.g. "sniper")</span></li>
+        <li><b>self.facet</b> · <b>self.level</b> · <b>self.xp</b></li>
+        <li><b>self.alive</b> · <b>self.respawn</b> · <b>self.buyback_cost/cd</b></li>
+        <li><b>self.hp_pct</b> · <b>self.mp_pct</b> · <b>self.hp</b> · <b>self.mp</b></li>
+        <li><b>self.pos</b><span class="t">(xpos, ypos)</span></li>
+        <li><b>self.status</b><span class="t">subset of [silenced, stunned, disarmed, magicimmune, hexed, muted, break, smoked]</span></li>
+        <li><b>self.talents</b><span class="t">picked talent indices 1..8</span></li>
+        <li><b>self.aghs</b> · <b>self.shard</b></li>
+        <li class="t" style="border-color:transparent">—</li>
+        <li><b>player.name / team / player_slot</b></li>
+        <li><b>player.kills / deaths / assists</b></li>
+        <li><b>player.last_hits / denies</b></li>
+        <li><b>player.gold / gpm / xpm</b></li>
+        <li class="t" style="border-color:transparent">—</li>
+        <li><b>items</b><span class="t">[{slot,name,cooldown,charges}, ...] — cleaned of "empty"</span></li>
+        <li><b>abilities</b><span class="t">[{slot,name,level,cooldown,ultimate,can_cast,passive}, ...]</span></li>
+        <li><b>allies</b><span class="t">[{hero,pos}] — minimap herocircles in vision</span></li>
+        <li><b>enemies</b><span class="t">[{hero,pos,yaw}] — minimap enemyicons in vision</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 06 EVENTS -->
+<section id="events" class="reveal">
+  <h2><span class="num">06</span> Events &amp; triggers</h2>
+  <p><code>EventDiffer</code> is stateful — it holds <code>prev</code>, debouncing buffers, an emitted-server-event dedup set capped at 500, and a <code>slot_to_hero</code> map it builds up over the match. It only diffs when both ticks are in <code>ACTIVE_GAME_STATES</code> (pre-game and post-game are intentionally inert). A change in <code>matchid</code> triggers <code>_reset()</code>.</p>
+
+  <h3>Event shape</h3>
+<pre><code>{ "clock": 612, "type": "low_hp", "msg": "HP at 28%", ...extra }</code></pre>
+
+  <h3>Diff-derived events (compare prev↔curr)</h3>
+  <div class="chips">
+    <span class="chip dot">kill</span><span class="chip bad">death</span><span class="chip dot">assist</span>
+    <span class="chip dot">team_kill</span><span class="chip dot">level_up</span>
+    <span class="chip bad">died</span><span class="chip good">respawn</span>
+    <span class="chip warn">low_hp</span><span class="chip warn">low_mp</span>
+    <span class="chip good">aghs</span><span class="chip good">shard</span>
+    <span class="chip dot">talent</span><span class="chip dot">item_added</span>
+    <span class="chip dot">item_removed</span><span class="chip good">ult_ready</span>
+    <span class="chip bad">our_building_fell</span><span class="chip dot">time_of_day</span>
+    <span class="chip dot">pause</span><span class="chip dot">roshan</span>
+    <span class="chip dot">status_on</span><span class="chip dot">status_off</span>
+    <span class="chip dot">enemy_seen</span><span class="chip dot">enemy_lost</span>
+    <span class="chip dot">game_state</span>
+  </div>
+
+  <h3 style="margin-top:18px">From the GSI <code>events</code> array</h3>
+  <div class="chips">
+    <span class="chip dot">roshan_killed</span><span class="chip dot">aegis_picked_up</span>
+    <span class="chip dot">item_purchase</span><span class="chip bad">first_blood</span>
+    <span class="chip dot">hero_kill</span><span class="chip dot">tower_kill</span>
+    <span class="chip dot">barracks_kill</span><span class="chip dot">ward_killed</span>
+    <span class="chip dot">courier_lost</span><span class="chip dot">courier_respawned</span>
+    <span class="chip dot">server_event <span class="mute">(fallback)</span></span>
+  </div>
+
+  <h3>Derived &amp; periodic</h3>
+  <div class="chips">
+    <span class="chip warn">enemies_missing</span>
+    <span class="chip dot">periodic_check</span>
+  </div>
+  <p class="mute" style="font-size:13px;margin-top:6px">
+    <code>enemies_missing</code> fires only after ≥<code>MISSING_ENEMIES_THRESHOLD</code> enemies have been off the map for ≥<code>MISSING_ENEMIES_SUSTAIN_SEC</code>. <code>periodic_check</code> fires every <code>PERIODIC_CHECK_INTERVAL_SEC</code> game-clock seconds. Both are skipped while <code>clock &lt; 0</code> (pre-game).
+  </p>
+
+  <h3>LLM trigger set</h3>
+  <p>A subset of the events above actually wakes the LLM. Everything else is logged but never produces a tip.</p>
+  <div class="chips">
+    <span class="chip dot">death</span><span class="chip dot">low_hp</span><span class="chip dot">low_mp</span>
+    <span class="chip dot">ult_ready</span><span class="chip dot">aghs</span><span class="chip dot">shard</span>
+    <span class="chip dot">level_up*</span><span class="chip dot">talent</span>
+    <span class="chip dot">roshan_killed</span><span class="chip dot">aegis_picked_up</span>
+    <span class="chip dot">our_building_fell</span><span class="chip dot">first_blood</span>
+    <span class="chip dot">smoked</span><span class="chip dot">enemies_missing</span>
+    <span class="chip dot">periodic_check</span><span class="chip dot">kill</span>
+    <span class="chip dot">team_kill</span>
+  </div>
+  <p class="mute" style="font-size:12.5px;margin-top:6px">* <code>level_up</code> only triggers at milestone levels: <code>{2, 6, 10, 12, 15, 18, 20, 25}</code>.</p>
+
+  <h3>Debouncing &amp; dedup</h3>
+  <ul>
+    <li><b>Status set</b> (silenced/stunned/…): <code>STATUS_DEBOUNCE_SEC = 2</code> — must be stable for 2 s before emitting <code>status_on</code> / <code>status_off</code>.</li>
+    <li><b>Vision set</b> (enemy hero on minimap): <code>VISION_DEBOUNCE_SEC = 3</code> — same idea for <code>enemy_seen</code> / <code>enemy_lost</code>.</li>
+    <li><b>Server events</b>: every parsed event is keyed by its sorted KV tuple. Dedup set is capped at 500 and trimmed to 300 newest.</li>
+  </ul>
+
+  <h3>Slot → hero inference</h3>
+  <p>GSI exposes player slots (0–9) but not always the hero behind them. The differ builds <code>slot_to_hero</code> by (a) the player's own hero, (b) observing victim/killer slots on <code>CHAT_MESSAGE_HERO_KILL</code> when exactly one hero of that side just vanished from the minimap, and (c) elimination once 5 enemy heroes have been seen.</p>
+</section>
+
+<!-- 07 COACH -->
+<section id="coach" class="reveal">
+  <h2><span class="num">07</span> The Coach pipeline</h2>
+  <p><code>Coach.maybe_advise(summary, events)</code> is the gate. It always refreshes <code>latest_summary</code> (used later for the freshness check), then walks a series of guards. Only one trigger fires per call, and the LLM runs on a daemon thread.</p>
+
+  <div class="gates">
+    <div class="gate"><span class="ico">🎯</span><b>pick trigger</b><small><code>_pick_trigger</code> — first event whose type is in <code>TRIGGER_TYPES</code></small></div>
+    <div class="gate"><span class="ico">⏱️</span><b>inflight + cooldown</b><small><code>_inflight</code>, <code>MIN_INTERVAL_SEC=8</code>, <code>PER_TRIGGER_COOLDOWN_SEC=30</code></small></div>
+    <div class="gate"><span class="ico">🧠</span><b>LLM call</b><small><code>_call_llm</code> → Ollama or Gemini, 120 s timeout, temp 0.4</small></div>
+    <div class="gate"><span class="ico">🌡️</span><b>freshness</b><small>player respawned? HP/MP recovered? enemies back?</small></div>
+    <div class="gate"><span class="ico">🔁</span><b>similarity</b><small>Jaccard ≥ 0.65 against <code>recent_tips</code> drops the tip</small></div>
+  </div>
+
+  <h3 style="margin-top:24px">Filter funnel — what can drop a tip</h3>
+  <div class="funnel">
+    <div class="step pass"><span class="name">events arrive</span><span class="desc">From <code>EventDiffer.process(curr)</code>. Empty → return early.</span><span class="out">→ pass</span></div>
+    <div class="step drop"><span class="name">no eligible trigger</span><span class="desc">No event type in <code>TRIGGER_TYPES</code>, or a non-milestone <code>level_up</code>.</span><span class="out">silent drop</span></div>
+    <div class="step drop"><span class="name">inflight</span><span class="desc">A previous LLM call is still running — the next tick wins.</span><span class="out">silent drop</span></div>
+    <div class="step drop"><span class="name">global cooldown</span><span class="desc">Less than <code>MIN_INTERVAL_SEC = 8</code> game-seconds since last call.</span><span class="out">silent drop</span></div>
+    <div class="step drop"><span class="name">per-trigger cooldown</span><span class="desc">Same trigger type fired &lt; <code>PER_TRIGGER_COOLDOWN_SEC = 30</code> ago.</span><span class="out">silent drop</span></div>
+    <div class="step pass"><span class="name">LLM call</span><span class="desc">Daemon thread; system prompt + user message; <code>num_predict=400</code>, temp 0.4.</span><span class="out">await</span></div>
+    <div class="step drop"><span class="name">empty content</span><span class="desc">Some thinking models put output in <code>thinking</code>; logged with a <code>thinking_excerpt</code>.</span><span class="out">drop &amp; log</span></div>
+    <div class="step drop"><span class="name">tip == "OK"</span><span class="desc">Model explicitly declined — logged as <code>[coach] declined</code>.</span><span class="out">drop &amp; log</span></div>
+    <div class="step drop"><span class="name">stale</span><span class="desc">Re-checked vs <code>latest_summary</code>: respawned, HP≥<code>FRESH_HP_RECOVERED_PCT=60%</code>, MP≥<code>FRESH_MP_RECOVERED_PCT=50%</code>, or <code>enemies_missing &lt; FRESH_MISSING_ENEMIES_MIN=2</code>.</span><span class="out">drop &amp; log</span></div>
+    <div class="step drop"><span class="name">too similar</span><span class="desc">Jaccard over word sets ≥ 0.65 against any of the last <code>RECENT_TIPS_MEMORY=8</code> tips.</span><span class="out">drop &amp; log</span></div>
+    <div class="step pass"><span class="name">survives</span><span class="desc">Print <code>[COACH][model] tip…</code>, append to <code>recent_tips</code>, scan for items → <code>recommended_items</code>, hand to <code>TTS.speak</code>.</span><span class="out">✓ shipped</span></div>
+  </div>
+
+  <h3>Stateful coach memory</h3>
+  <div class="grid cols-3" style="margin-top:6px">
+    <div class="card"><h4><code>recent_tips</code></h4><p class="mute" style="font-size:13px;margin:0">deque(maxlen=<b>8</b>). Fed back into the next prompt so the model gets a "don't repeat these" reminder.</p></div>
+    <div class="card"><h4><code>recommended_items</code></h4><p class="mute" style="font-size:13px;margin:0">Set, reset per match. <code>_extract_recommended_items()</code> scans each shipped tip against OpenDota's full item-dname list. Added to the next prompt as "items you've already recommended".</p></div>
+    <div class="card"><h4><code>latest_summary</code></h4><p class="mute" style="font-size:13px;margin:0">Always overwritten on every tick. Used by <code>_stale_reason()</code> when the LLM finally responds — so a "you're at 28% HP" tip gets dropped if you're already back to full.</p></div>
+  </div>
+</section>
+
+<!-- 08 PROMPT -->
+<section id="prompt" class="reveal">
+  <h2><span class="num">08</span> The LLM prompt anatomy</h2>
+  <p>Two messages: a <b>system prompt</b> that pins behavior, and a <b>user message</b> built by <code>_build_prompt()</code> from the summary, recent events, recent tips, and the trigger string.</p>
+
+  <h3>System prompt — guardrails</h3>
+  <ul style="font-size:13.5px">
+    <li>Output: <b>one actionable tip</b>, one or two short sentences. No greeting, no padding. Reply just <code>OK</code> if nothing useful.</li>
+    <li>Visibility rules baked in: own hero fully visible; enemy items/HP/mana <b>never</b> visible; enemy positions only when in vision; ally items/HP not visible.</li>
+    <li><b>Only suggest abilities/items that appear in the user message</b> — no hallucinations.</li>
+    <li>Per-trigger focus block (death → respawn decision; <code>low_hp</code> → escape; <code>ult_ready</code> → where/whom; <code>periodic_check</code> → next item or strategic call; …).</li>
+    <li>"Good vs Bad" few-shot examples that punish empty advice like <i>"save it for the right moment"</i> in favour of specific spatial / item / target calls.</li>
+  </ul>
+
+  <h3>User message — every block, in order</h3>
+  <div class="prompt">
+    <div class="block"><span class="key">Game context</span><span class="val">phase (PRE/EARLY/MID/MID-LATE/LATE), hero + roles + attribute, lane bucket (from <code>_classify_lane</code>), facet, clock, score, day/night, level, HP%/MP%, status flags, K/D/A, CS, gold, GPM</span></div>
+    <div class="block"><span class="key">Your abilities</span><span class="val">name + dname, level, ult/passive flag, cooldown ("off cd" or "ON CD Xs"), first-sentence description from OpenDota</span></div>
+    <div class="block"><span class="key">Your items</span><span class="val">display names of equipped items (no empty slots)</span></div>
+    <div class="block"><span class="key">Allies in vision</span><span class="val">hero short name + lane bucket — only those visible on the minimap</span></div>
+    <div class="block"><span class="key">Enemy lineup</span><span class="val">union of every enemy hero <b>ever</b> seen this match (so the model knows the full opposing lineup)</span></div>
+    <div class="block"><span class="key">Visible enemies</span><span class="val">N/5 currently visible + N missing + per-hero lane bucket</span></div>
+    <div class="block"><span class="key">Recent events</span><span class="val">last 8 typed events (e.g. <code>level_up: Leveled to 6</code>)</span></div>
+    <div class="block"><span class="key">Recent tips</span><span class="val">last 8 tips already given this match — "DO NOT repeat or rephrase, give a DIFFERENT angle"</span></div>
+    <div class="block"><span class="key">Already-recommended items</span><span class="val">every item dname this match's prior tips named — model must pick something else next</span></div>
+    <div class="block"><span class="key">Trigger</span><span class="val">"<i>type</i>: <i>msg</i>" e.g. <code>periodic_check: periodic check-in</code></span></div>
+    <div class="block"><span class="key">Trigger tail</span><span class="val"><code>periodic_check</code> gets an extra "(a) build [item] next, or (b) push/smoke/defend [lane]" framing tail</span></div>
+  </div>
+
+  <h3>LLM call: Ollama vs Gemini</h3>
+  <div class="grid cols-2">
+    <div class="card"><h4>Ollama path</h4>
+<pre><code>POST {OLLAMA_URL}  // default localhost:11434/api/chat
+{
+  "model": "qwen3.6:27b",
+  "messages": [system, user],
+  "stream": false, "think": false,
+  "options": { "temperature": 0.4, "num_predict": 400 }
+}</code></pre>
+      <p class="mute" style="font-size:12.5px;margin:6px 0 0">If <code>message.content</code> is empty, the code logs <code>thinking</code> and <code>done_reason</code> so silent drops are visible.</p>
+    </div>
+    <div class="card"><h4>Gemini (OpenAI-compat)</h4>
+<pre><code>POST {GEMINI_URL}  // OpenAI-compatible
+Authorization: Bearer {GEMINI_API_KEY}
+{
+  "model": "gemini-...",
+  "messages": [system, user],
+  "temperature": 0.4, "max_tokens": 400
+}</code></pre>
+      <p class="mute" style="font-size:12.5px;margin:6px 0 0">Triggered when the model name starts with <code>gemini-</code> or <code>models/gemini-</code>. HTTP errors capture status + body preview.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 09 TTS -->
+<section id="tts" class="reveal">
+  <h2><span class="num">09</span> TTS pipeline</h2>
+  <p>Piper synthesizes to a temp WAV, <code>winsound.PlaySound</code> plays it, then the WAV is deleted. A single <code>_lock</code> serializes playback so tips don't talk over each other. Each <code>speak()</code> call spawns its own daemon thread, so the coach pipeline is never blocked by audio.</p>
+
+  <div class="grid cols-3" style="margin-top:14px">
+    <div class="card"><span class="badge">DEFAULT</span><h4>en_US-amy-medium</h4><p class="mute" style="font-size:13px;margin:0">ONNX + JSON sidecar under <code>models/</code>. Override with <code>$env:PIPER_MODEL</code>.</p></div>
+    <div class="card"><span class="badge">FALLBACK</span><h4>Missing voice</h4><p class="mute" style="font-size:13px;margin:0">No exception — prints <code>[tts] model not found</code> and silently disables speech. Tips still log.</p></div>
+    <div class="card"><span class="badge">KILL SWITCH</span><h4><code>TTS_DISABLED=1</code></h4><p class="mute" style="font-size:13px;margin:0">Set the env var to mute the run entirely. Useful for development.</p></div>
+  </div>
+</section>
+
+<!-- 10 LOGGER -->
+<section id="logger" class="reveal">
+  <h2><span class="num">10</span> Logging behavior</h2>
+  <p><b><code>setup_logging()</code> must run before importing <code>coach</code></b> — otherwise <code>coach</code>'s module-level prints don't get captured. <code>main.py</code> respects that import order.</p>
+  <ul>
+    <li>Logs go under <code>logs/</code> (auto-created).</li>
+    <li>Pre-match output writes to <code>logs/session_&lt;timestamp&gt;.log</code>.</li>
+    <li>On the first tick that exposes a <code>matchid</code>, <code>switch_to_match()</code> renames the session log to <code>&lt;matchid&gt;.log</code> — carrying pre-game content forward only from a <code>session_*</code> log, never from a previous match's log.</li>
+    <li>Both stdout and stderr are tee'd via the <code>_Tee</code> class → console + file.</li>
+    <li>Werkzeug's per-request access logger is set to <code>WARNING</code> in the same function, to silence the <code>200 -</code> spam.</li>
+  </ul>
+</section>
+
+<!-- 11 CONSTANTS -->
+<section id="constants" class="reveal">
+  <h2><span class="num">11</span> Constants &amp; lookups</h2>
+  <p><code>constants.py</code> loads OpenDota dotaconstants JSON from <code>data/</code> at import time. Use these instead of reimplementing.</p>
+
+  <table>
+    <tr><th>Function</th><th>Returns</th><th>Use it for</th></tr>
+    <tr><td><code>item_name(id)</code></td><td>short item key (e.g. <code>blink</code>)</td><td>parsing chat-message item purchases</td></tr>
+    <tr><td><code>item_dname(name)</code></td><td>display name (e.g. <code>Blink Dagger</code>)</td><td>prompt formatting</td></tr>
+    <tr><td><code>ability_dname(name)</code></td><td>display name (e.g. <code>Assassinate</code>)</td><td>prompt formatting</td></tr>
+    <tr><td><code>ability_desc(name)</code></td><td>first-sentence description, ≤180 chars</td><td>injecting ability behavior into prompts</td></tr>
+    <tr><td><code>hero_info(short)</code></td><td><code>{dname, primary_attr, roles}</code></td><td>hero context line in prompt</td></tr>
+    <tr><td><code>slot_side(slot, my_slot, my_team)</code></td><td><code>self</code> / <code>ally</code> / <code>enemy</code> / <code>unknown</code></td><td>bucketing any 0–9 player slot</td></tr>
+    <tr><td><code>ALL_ITEM_DNAMES</code></td><td>lowercase set of every item dname</td><td>scanning tips to detect what items they recommend</td></tr>
+  </table>
+</section>
+
+<!-- 12 CONFIG -->
+<section id="config" class="reveal">
+  <h2><span class="num">12</span> Configuration (env vars)</h2>
+  <p><b>PowerShell only.</b> <code>set VAR=...</code> is cmd.exe syntax and silently no-ops here. Always use <code>$env:VAR = "..."</code>. <code>main.py</code> loads <code>.env</code> with <code>override=True</code> <b>before</b> importing <code>coach</code> — so <code>.env</code> wins over pre-existing shell vars.</p>
+  <div class="env-grid">
+    <div class="env"><div class="k">DOTA_COACH_MODEL</div>Default: <code>qwen3.6:27b</code><div class="d">Ollama tag, or a <code>gemini-*</code> model name to switch providers.</div></div>
+    <div class="env"><div class="k">OLLAMA_URL</div>Default: <code>http://localhost:11434/api/chat</code><div class="d">Override only if Ollama is on a non-default host/port.</div></div>
+    <div class="env"><div class="k">GEMINI_URL</div>Default: Google's OpenAI-compatible endpoint<div class="d">Any OpenAI-compatible chat-completions URL works (OpenRouter, OpenAI, …).</div></div>
+    <div class="env"><div class="k">GEMINI_API_KEY</div>Required when using a <code>gemini-*</code> model<div class="d">Sent as <code>Authorization: Bearer ...</code>.</div></div>
+    <div class="env"><div class="k">DOTA2_GSI_TOKEN</div>Default: <code>my_super_secret_token_123!</code><div class="d">Must match <code>auth.token</code> in the GSI cfg file.</div></div>
+    <div class="env"><div class="k">PIPER_MODEL</div>Default: <code>models/en_US-amy-medium.onnx</code><div class="d">Absolute or relative path to any Piper ONNX voice.</div></div>
+    <div class="env"><div class="k">TTS_DISABLED</div>Default: unset<div class="d">Set to <code>1</code>/<code>true</code>/<code>yes</code> to mute audio entirely.</div></div>
+  </div>
+
+  <h3>Tunable thresholds (in code)</h3>
+  <table>
+    <tr><th>File · Constant</th><th>Default</th><th>What it does</th></tr>
+    <tr><td><code>coach.py</code> · MIN_INTERVAL_SEC</td><td>8</td><td>Min game-seconds between any two LLM calls</td></tr>
+    <tr><td><code>coach.py</code> · PER_TRIGGER_COOLDOWN_SEC</td><td>30</td><td>Per-type cooldown (e.g. <code>death</code> can't fire 4× during a respawn)</td></tr>
+    <tr><td><code>coach.py</code> · RECENT_TIPS_MEMORY</td><td>8</td><td>How many prior tips are fed back into the prompt</td></tr>
+    <tr><td><code>coach.py</code> · LEVEL_UP_MILESTONES</td><td>{2,6,10,12,15,18,20,25}</td><td>Only levels that wake the LLM</td></tr>
+    <tr><td><code>coach.py</code> · FRESH_HP_RECOVERED_PCT</td><td>60</td><td>Drop a <code>low_hp</code> tip if HP is back above this</td></tr>
+    <tr><td><code>coach.py</code> · FRESH_MP_RECOVERED_PCT</td><td>50</td><td>Same for <code>low_mp</code></td></tr>
+    <tr><td><code>coach.py</code> · FRESH_MISSING_ENEMIES_MIN</td><td>2</td><td>Drop an <code>enemies_missing</code> tip if fewer are missing now</td></tr>
+    <tr><td><code>events.py</code> · LOW_HP_PCT</td><td>30</td><td>HP% threshold to fire <code>low_hp</code></td></tr>
+    <tr><td><code>events.py</code> · LOW_MP_PCT</td><td>20</td><td>MP% threshold to fire <code>low_mp</code></td></tr>
+    <tr><td><code>events.py</code> · STATUS_DEBOUNCE_SEC</td><td>2</td><td>Stability window for status_on / status_off</td></tr>
+    <tr><td><code>events.py</code> · VISION_DEBOUNCE_SEC</td><td>3</td><td>Stability window for enemy_seen / enemy_lost</td></tr>
+    <tr><td><code>events.py</code> · MISSING_ENEMIES_THRESHOLD</td><td>2</td><td>How many missing trigger the warning</td></tr>
+    <tr><td><code>events.py</code> · MISSING_ENEMIES_SUSTAIN_SEC</td><td>5</td><td>How long they must stay missing</td></tr>
+    <tr><td><code>events.py</code> · PERIODIC_CHECK_INTERVAL_SEC</td><td>120</td><td>How often the strategic check fires</td></tr>
+    <tr><td><code>main.py</code> · SNAPSHOT_INTERVAL_SECONDS</td><td>30</td><td>Wall-time gap between console snapshots</td></tr>
+  </table>
+</section>
+
+<!-- 13 FILES -->
+<section id="files" class="reveal">
+  <h2><span class="num">13</span> File layout</h2>
+<div class="tree">dota_coach/
+├── main.py              <span class="anno"># Flask entry point + per-tick orchestration</span>
+├── coach.py             <span class="anno"># LLM caller, prompt builder, dedup, freshness check</span>
+├── events.py            <span class="anno"># EventDiffer — turns ticks into typed events</span>
+├── extract_info.py      <span class="anno"># Raw GSI JSON → flat summary dict</span>
+├── constants.py         <span class="anno"># Loads OpenDota items/heroes/abilities JSON</span>
+├── tts.py               <span class="anno"># Piper voice synthesis + winsound playback</span>
+├── logger.py            <span class="anno"># Tee'd stdout/stderr → console + per-match log</span>
+├── data/
+│   ├── items.json       <span class="anno"># OpenDota dotaconstants</span>
+│   ├── heroes.json
+│   └── abilities.json
+├── models/
+│   ├── en_US-amy-medium.onnx        <span class="anno"># Piper voice (download separately)</span>
+│   └── en_US-amy-medium.onnx.json
+├── logs/                <span class="anno"># &lt;matchid&gt;.log per game, session_&lt;ts&gt;.log before match start</span>
+└── .venv/</div>
+
+  <h3>Run it</h3>
+<pre><code>cd D:\work\develop\dota_coach
+.\.venv\Scripts\Activate.ps1
+
+# optional: pick a model (default qwen3.6:27b)
+$env:DOTA_COACH_MODEL = "gemma4:e4b"
+
+python main.py</code></pre>
+  <p class="mute" style="font-size:13px">Then launch a Dota match. You should see <code>[server_event]</code>, snapshot blocks every 30 s, and <code>[COACH][model] tip…</code> lines a few seconds after triggers.</p>
+</section>
+
+<!-- 14 EXTEND -->
+<section id="extend" class="reveal">
+  <h2><span class="num">14</span> Extending the coach</h2>
+
+  <details open>
+    <summary>Add a new trigger type</summary>
+    <ol style="font-size:13.5px;margin:6px 0 0 18px;padding:0">
+      <li>Decide where to detect it. Diff-based? Add to a <code>_diff_*</code> method on <code>EventDiffer</code>. Server-event? Add a branch in <code>_parse_server_event</code>. Derived? Extend <code>_derived_triggers</code>.</li>
+      <li>Emit it with <code>self._ev(clk, "your_type", "human-readable msg", ...extra)</code>.</li>
+      <li>Add <code>"your_type"</code> to <code>coach.TRIGGER_TYPES</code> so the gate considers it.</li>
+      <li>Add a one-line bullet to <code>SYSTEM_PROMPT</code>'s "Trigger-type focus" section telling the model what to do for it.</li>
+      <li>If it can be "stale" by the time the LLM responds, extend <code>_stale_reason()</code>.</li>
+    </ol>
+  </details>
+
+  <details>
+    <summary>Add a new field to the summary contract</summary>
+    <ol style="font-size:13.5px;margin:6px 0 0 18px;padding:0">
+      <li>Populate it in <code>extract_info.summarize()</code>.</li>
+      <li>Make every consumer tolerate it being missing (older captured logs may not have it).</li>
+      <li>Read it in <code>EventDiffer</code> if it produces events.</li>
+      <li>Surface it in <code>coach._build_prompt</code> if the model should know about it.</li>
+      <li>Optionally print it in <code>extract_info.print_snapshot</code> for the 30-second console summary.</li>
+    </ol>
+  </details>
+
+  <details>
+    <summary>Quickly smoke-test summarization changes</summary>
+    <p style="font-size:13.5px;margin:6px 0 0"><code>extract_info.py</code> has a <code>__main__</code> that pretty-prints <code>data_less_kill2.json</code> (a captured GSI tick). After editing <code>summarize()</code> / <code>print_snapshot()</code>, run <code>python extract_info.py</code>.</p>
+  </details>
+
+  <details>
+    <summary>Smoke-test TTS without launching Dota</summary>
+    <p style="font-size:13.5px;margin:6px 0 0"><code>python tts.py</code> says <i>"Coach online. Synthesis test, one two three."</i> Useful for checking the voice files and audio device.</p>
+  </details>
+
+  <details>
+    <summary>Replace the lane classifier</summary>
+    <p style="font-size:13.5px;margin:6px 0 0"><code>coach._classify_lane(x, y)</code> is an approximation of Dota's lane regions. If you need precise lane logic, <b>replace it</b> rather than tweaking the magic numbers in place — that was a deliberate choice in the code's history.</p>
+  </details>
+</section>
+
+<footer>
+  <span>Dota Coach · architecture overview · single page, no external deps</span>
+  <span class="mute">Generated to describe the code in this repo as of the current commit.</span>
+</footer>
+
+</div>
+
+<script>
+  // Reveal on scroll
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }});
+  },{rootMargin:"0px 0px -10% 0px",threshold:0.05});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // Live ticker — fake console stream so the page feels alive
+  const lines = [
+    "[14:02:11] [00:00] [game_state] Game state: DOTA_GAMERULES_STATE_HERO_SELECTION",
+    "[14:03:48] [00:00] [game_state] Game state: DOTA_GAMERULES_STATE_PRE_GAME",
+    "[14:04:33] [-01:12] periodic_check armed",
+    "[14:05:45] [00:00] [game_state] Game state: DOTA_GAMERULES_STATE_GAME_IN_PROGRESS",
+    "[14:06:12] [00:27] [enemy_seen] Spotted: lion at (-2140, 1820)",
+    "[14:08:53] [03:08] [level_up] Leveled to 6",
+    "[14:08:54] [03:09] [ult_ready] Ultimate sniper_assassinate is ready",
+    "[COACH][qwen3.6:27b] Snipe Lion from fog with Assassinate — he's mid-rotating alone. Stay 1700 range back.",
+    "[14:09:21] [03:36] [team_kill] Allies got a kill (R1-D0)",
+    "[14:10:02] [04:17] [low_hp] HP at 28%",
+    "[COACH][qwen3.6:27b] TP out top now — you're seen, Razor will jump in 2s.",
+    "[14:12:11] [06:26] [periodic_check] periodic check-in",
+    "[COACH][qwen3.6:27b] Build Hurricane Pike next — Lion hex and Razor static both want you in close.",
+    "[14:14:33] [08:48] [enemies_missing] 3 enemies off the map",
+    "[14:14:40] [08:55] [coach] dropped duplicate tip: TP out top now — you're seen, Razor will jump...",
+    "[14:15:01] [09:16] [our_building_fell] We lost: dota_goodguys_tower1_mid",
+    "[COACH][qwen3.6:27b] Defend mid with smoke + glyph — Lion+Razor mid push, don't 1v3.",
+    "[14:18:44] [12:59] [death] You died (total 1)",
+    "[COACH][qwen3.6:27b] No buyback — stack ancients at 13:08 then push bot with team."
+  ];
+  const out = document.getElementById('tickerOut');
+  let i=0;
+  function pushLine(){
+    const ln = document.createElement('div');
+    ln.className = 'line-in';
+    ln.textContent = lines[i % lines.length];
+    if(ln.textContent.startsWith('[COACH]')) ln.style.color = 'var(--accent2)';
+    else if(ln.textContent.includes('low_hp') || ln.textContent.includes('death') || ln.textContent.includes('our_building_fell') || ln.textContent.includes('enemies_missing')) ln.style.color = 'var(--warn)';
+    else if(ln.textContent.includes('dropped')) ln.style.color = 'var(--mute)';
+    out.appendChild(ln);
+    while(out.childElementCount > 14) out.removeChild(out.firstChild);
+    i++;
+  }
+  for(let k=0;k<8;k++) pushLine();
+  setInterval(pushLine, 1500);
+</script>
+</body>
+</html>
