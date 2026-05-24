@@ -36,7 +36,7 @@ Full install, run, tuning, and troubleshooting steps below.
 ## 2. Clone / Get the Code
 
 ```powershell
-cd D:\work\develop
+cd <your-projects-folder>
 git clone <your-repo-url> dota_coach
 cd dota_coach
 ```
@@ -132,8 +132,8 @@ https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_US/amy/medium
 Place both files here:
 
 ```
-D:\work\develop\dota_coach\models\en_US-amy-medium.onnx
-D:\work\develop\dota_coach\models\en_US-amy-medium.onnx.json
+<repo-root>\models\en_US-amy-medium.onnx
+<repo-root>\models\en_US-amy-medium.onnx.json
 ```
 
 (The `.onnx.json` file is the metadata sidecar — Piper needs both.)
@@ -227,7 +227,7 @@ Dota only loads GSI configs on startup. Quit and relaunch Dota after dropping th
 Open PowerShell, activate the venv, optionally set the model, then start the server:
 
 ```powershell
-cd D:\work\develop\dota_coach
+cd <repo-root>
 .\.venv\Scripts\Activate.ps1
 
 # Optional: pick a model (default is qwen3.6:27b)
