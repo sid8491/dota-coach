@@ -23,7 +23,7 @@
     --dire:#f87171;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:linear-gradient(180deg,#070a0f 0%,#0b0f14 40%,#0a0d12 100%);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,sans-serif;line-height:1.55}
+  html,body{margin:0;padding:0;background:linear-gradient(180deg,#070a0f 0%,#0b0f14 40%,#0a0d12 100%);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,sans-serif;line-height:1.6;font-size:17px}
   ::selection{background:var(--accent);color:#001220}
   a{color:var(--accent);text-decoration:none}
   a:hover{text-decoration:underline}
@@ -35,9 +35,9 @@
     background:radial-gradient(circle at 10% 10%,#1a3a5c 0%,#0d1622 50%,#0a0d12 100%);
     padding:56px 40px;margin-bottom:48px;border:1px solid var(--line);
   }
-  header.hero h1{font-size:42px;margin:0 0 8px;letter-spacing:-0.02em}
-  header.hero .sub{color:var(--mute);max-width:780px}
-  header.hero .tag{display:inline-block;padding:4px 10px;font-size:12px;background:rgba(124,220,255,.1);color:var(--accent);border:1px solid rgba(124,220,255,.3);border-radius:999px;margin-bottom:14px;animation:pulse 2.4s ease-in-out infinite}
+  header.hero h1{font-size:46px;margin:0 0 10px;letter-spacing:-0.02em;line-height:1.15}
+  header.hero .sub{color:var(--mute);max-width:820px;font-size:16px}
+  header.hero .tag{display:inline-block;padding:5px 12px;font-size:13px;background:rgba(124,220,255,.1);color:var(--accent);border:1px solid rgba(124,220,255,.3);border-radius:999px;margin-bottom:14px;animation:pulse 2.4s ease-in-out infinite}
   @keyframes pulse{0%,100%{opacity:.7}50%{opacity:1}}
 
   /* floating particles in hero */
@@ -48,13 +48,14 @@
     100%{transform:translate(80px,-120px);opacity:0}
   }
 
-  h2{font-size:26px;margin:56px 0 18px;letter-spacing:-0.01em;display:flex;align-items:center;gap:12px}
-  h2 .num{font-size:14px;color:var(--accent);background:rgba(124,220,255,.08);border:1px solid rgba(124,220,255,.25);border-radius:8px;padding:2px 8px;font-family:ui-monospace,monospace}
-  h3{font-size:18px;margin:28px 0 8px;color:#cfe2f3}
-  p,li{color:#cbd6e2}
+  h2{font-size:30px;margin:60px 0 18px;letter-spacing:-0.01em;display:flex;align-items:center;gap:12px}
+  h2 .num{font-size:15px;color:var(--accent);background:rgba(124,220,255,.08);border:1px solid rgba(124,220,255,.25);border-radius:8px;padding:3px 9px;font-family:ui-monospace,monospace}
+  h3{font-size:20px;margin:28px 0 10px;color:#cfe2f3}
+  h4{font-size:17px}
+  p,li{color:#cbd6e2;font-size:16px}
   .mute{color:var(--mute)}
-  code,kbd{font-family:ui-monospace,SF Mono,Menlo,Consolas,monospace;font-size:13px;background:#1a2433;border:1px solid var(--line);border-radius:4px;padding:1px 6px;color:var(--code)}
-  pre{background:#0b1320;border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:13px;line-height:1.55;color:#d6e1ee}
+  code,kbd{font-family:ui-monospace,SF Mono,Menlo,Consolas,monospace;font-size:14px;background:#1a2433;border:1px solid var(--line);border-radius:4px;padding:1px 6px;color:var(--code)}
+  pre{background:#0b1320;border:1px solid var(--line);border-radius:10px;padding:16px 18px;overflow-x:auto;font-size:14px;line-height:1.6;color:#d6e1ee}
   pre code{background:none;border:none;padding:0;color:inherit}
 
   .grid{display:grid;gap:16px}
@@ -65,8 +66,8 @@
 
   .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 18px 16px;position:relative;transition:transform .25s ease,border-color .25s ease}
   .card:hover{transform:translateY(-2px);border-color:#365070}
-  .card h4{margin:0 0 6px;font-size:15px;letter-spacing:.02em}
-  .card .badge{position:absolute;top:14px;right:14px;font-size:11px;color:var(--accent);background:rgba(124,220,255,.08);border:1px solid rgba(124,220,255,.25);padding:2px 8px;border-radius:6px;font-family:ui-monospace,monospace}
+  .card h4{margin:0 0 6px;font-size:16px;letter-spacing:.02em}
+  .card .badge{position:absolute;top:14px;right:14px;font-size:12px;color:var(--accent);background:rgba(124,220,255,.08);border:1px solid rgba(124,220,255,.25);padding:3px 9px;border-radius:6px;font-family:ui-monospace,monospace}
 
   /* reveal on scroll */
   .reveal{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease}
@@ -76,10 +77,10 @@
   .pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;align-items:stretch;margin-top:18px}
   @media (max-width:840px){.pipeline{grid-template-columns:1fr}}
   .stage{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:16px 14px;position:relative;min-height:160px}
-  .stage .step{font-size:11px;color:var(--accent);font-family:ui-monospace,monospace;letter-spacing:.05em}
-  .stage h4{margin:6px 0 6px;font-size:16px}
-  .stage p{font-size:13px;color:#aab8c8;margin:0}
-  .stage .icon{font-size:22px;margin-bottom:4px;display:inline-block;animation:bob 3.6s ease-in-out infinite}
+  .stage .step{font-size:12px;color:var(--accent);font-family:ui-monospace,monospace;letter-spacing:.05em}
+  .stage h4{margin:6px 0 6px;font-size:17px}
+  .stage p{font-size:14px;color:#aab8c8;margin:0}
+  .stage .icon{font-size:24px;margin-bottom:4px;display:inline-block;animation:bob 3.6s ease-in-out infinite}
   .stage:nth-child(2) .icon{animation-delay:.3s}
   .stage:nth-child(3) .icon{animation-delay:.6s}
   .stage:nth-child(4) .icon{animation-delay:.9s}
@@ -96,9 +97,9 @@
   .hld{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;margin-top:16px;position:relative;overflow:hidden}
   .hld .lane{display:grid;grid-template-columns:180px 1fr;gap:14px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--line)}
   .hld .lane:last-child{border-bottom:none}
-  .hld .lane .label{color:var(--accent);font-family:ui-monospace,monospace;font-size:12px;letter-spacing:.05em}
+  .hld .lane .label{color:var(--accent);font-family:ui-monospace,monospace;font-size:13px;letter-spacing:.05em}
   .hld .row{display:flex;gap:10px;flex-wrap:wrap}
-  .hld .box{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;display:flex;align-items:center;gap:8px}
+  .hld .box{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 13px;font-size:14px;display:flex;align-items:center;gap:8px}
   .hld .box .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
   .hld .box.dota .dot{background:var(--radiant)}
   .hld .box.flask .dot{background:#ffb86b}
@@ -107,14 +108,14 @@
 
   /* table */
   table{width:100%;border-collapse:collapse;margin-top:10px;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
-  th,td{padding:9px 12px;text-align:left;font-size:13px;border-bottom:1px solid var(--line);vertical-align:top}
-  th{background:#0e1622;color:var(--accent);font-weight:600;font-family:ui-monospace,monospace;letter-spacing:.05em;font-size:11px;text-transform:uppercase}
+  th,td{padding:10px 13px;text-align:left;font-size:14px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#0e1622;color:var(--accent);font-weight:600;font-family:ui-monospace,monospace;letter-spacing:.05em;font-size:12px;text-transform:uppercase}
   tr:last-child td{border-bottom:none}
-  td code{font-size:12px}
+  td code{font-size:13px}
 
   /* event chips */
   .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-  .chip{font-family:ui-monospace,monospace;font-size:12px;padding:4px 9px;border-radius:6px;border:1px solid var(--line);background:#142031;color:#cfe2f3;cursor:default;transition:all .2s}
+  .chip{font-family:ui-monospace,monospace;font-size:13px;padding:5px 10px;border-radius:6px;border:1px solid var(--line);background:#142031;color:#cfe2f3;cursor:default;transition:all .2s}
   .chip:hover{background:#1c2c44;border-color:#365070;transform:translateY(-1px)}
   .chip.dot::before{content:"●";color:var(--accent);margin-right:6px;font-size:10px}
   .chip.warn::before{color:var(--warn)}
@@ -124,7 +125,8 @@
   /* tick simulator */
   .ticker{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:18px;position:relative;overflow:hidden}
   .ticker .heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-  .ticker .heading h4{margin:0;font-size:14px}
+  .ticker .heading h4{margin:0;font-size:15px}
+  .ticker pre{font-size:13px}
   .ticker .led{width:10px;height:10px;border-radius:50%;background:var(--good);box-shadow:0 0 8px var(--good);animation:blink 1.2s ease-in-out infinite}
   @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
   .ticker pre{margin:0;max-height:240px;overflow:hidden;position:relative}
@@ -134,97 +136,97 @@
 
   /* trigger funnel */
   .funnel{margin-top:18px}
-  .funnel .step{display:grid;grid-template-columns:200px 1fr 90px;gap:16px;align-items:center;padding:10px 14px;background:var(--panel);border:1px solid var(--line);border-radius:10px;margin-bottom:8px;position:relative}
-  .funnel .step .name{font-family:ui-monospace,monospace;font-size:13px;color:var(--accent)}
-  .funnel .step .desc{font-size:13px;color:#cbd6e2}
-  .funnel .step .out{font-family:ui-monospace,monospace;font-size:11px;color:var(--mute);text-align:right}
+  .funnel .step{display:grid;grid-template-columns:220px 1fr 100px;gap:16px;align-items:center;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-radius:10px;margin-bottom:8px;position:relative}
+  .funnel .step .name{font-family:ui-monospace,monospace;font-size:14px;color:var(--accent)}
+  .funnel .step .desc{font-size:14px;color:#cbd6e2}
+  .funnel .step .out{font-family:ui-monospace,monospace;font-size:12px;color:var(--mute);text-align:right}
   .funnel .step::before{content:"";position:absolute;left:-2px;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--accent),transparent);border-radius:3px;opacity:.5}
   .funnel .step.drop::before{background:linear-gradient(180deg,var(--bad),transparent)}
   .funnel .step.pass::before{background:linear-gradient(180deg,var(--good),transparent)}
 
   /* prompt anatomy */
   .prompt{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:0;overflow:hidden}
-  .prompt .block{padding:12px 14px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:180px 1fr;gap:12px;font-size:13px;align-items:flex-start}
+  .prompt .block{padding:13px 16px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:200px 1fr;gap:14px;font-size:14px;align-items:flex-start}
   .prompt .block:last-child{border-bottom:none}
-  .prompt .block .key{color:var(--accent2);font-family:ui-monospace,monospace;font-size:12px}
-  .prompt .block .val{color:#d6e1ee;font-family:ui-monospace,monospace;font-size:12px;white-space:pre-wrap}
+  .prompt .block .key{color:var(--accent2);font-family:ui-monospace,monospace;font-size:13px}
+  .prompt .block .val{color:#d6e1ee;font-family:ui-monospace,monospace;font-size:13px;white-space:pre-wrap;line-height:1.55}
 
   /* env vars */
   .env-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
   @media (max-width:840px){.env-grid{grid-template-columns:1fr}}
-  .env{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-family:ui-monospace,monospace;font-size:12px}
+  .env{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-family:ui-monospace,monospace;font-size:13px}
   .env .k{color:var(--accent)}
-  .env .d{color:var(--mute);font-size:11px;margin-top:4px;font-family:inherit}
+  .env .d{color:var(--mute);font-size:12px;margin-top:4px;font-family:inherit}
 
   /* file tree */
-  .tree{font-family:ui-monospace,monospace;font-size:13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 18px;color:#cfe2f3;white-space:pre;overflow-x:auto;line-height:1.7}
+  .tree{font-family:ui-monospace,monospace;font-size:14px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 20px;color:#cfe2f3;white-space:pre;overflow-x:auto;line-height:1.7}
   .tree .anno{color:var(--mute)}
 
   /* TOC */
-  nav.toc{position:sticky;top:14px;z-index:5;background:rgba(11,15,20,.85);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:6px 10px;font-size:12px;margin-bottom:24px}
-  nav.toc a{color:#aab8c8;padding:3px 8px;border-radius:6px;border:1px solid transparent;font-family:ui-monospace,monospace}
+  nav.toc{position:sticky;top:14px;z-index:5;background:rgba(11,15,20,.85);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:12px;padding:11px 14px;display:flex;flex-wrap:wrap;gap:6px 10px;font-size:13px;margin-bottom:24px}
+  nav.toc a{color:#aab8c8;padding:4px 9px;border-radius:6px;border:1px solid transparent;font-family:ui-monospace,monospace}
   nav.toc a:hover{background:#142031;color:var(--accent);border-color:var(--line);text-decoration:none}
 
   /* footer */
-  footer{margin-top:80px;padding-top:24px;border-top:1px solid var(--line);color:var(--mute);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  footer{margin-top:80px;padding-top:24px;border-top:1px solid var(--line);color:var(--mute);font-size:14px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 
   /* visualization of summary contract */
   .summary-vis{margin-top:18px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
   @media (max-width:840px){.summary-vis{grid-template-columns:1fr}}
   .summary-vis .col h4{margin:0 0 8px}
-  .summary-vis ul{list-style:none;padding:0;margin:0;font-family:ui-monospace,monospace;font-size:12.5px}
-  .summary-vis li{padding:3px 8px;border-left:2px solid var(--line);margin:3px 0;color:#d6e1ee}
+  .summary-vis ul{list-style:none;padding:0;margin:0;font-family:ui-monospace,monospace;font-size:13.5px}
+  .summary-vis li{padding:4px 9px;border-left:2px solid var(--line);margin:3px 0;color:#d6e1ee}
   .summary-vis li b{color:var(--accent2);font-weight:600}
-  .summary-vis li .t{color:var(--mute);font-size:11px;margin-left:6px}
+  .summary-vis li .t{color:var(--mute);font-size:12px;margin-left:6px}
 
   /* throttle gates visual */
   .gates{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}
   @media (max-width:840px){.gates{grid-template-columns:repeat(2,1fr)}}
-  .gate{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;text-align:center;font-size:13px;overflow:hidden}
-  .gate .ico{font-size:22px;display:block;margin-bottom:4px}
-  .gate b{display:block;font-size:13px;color:#cfe2f3}
-  .gate small{color:var(--mute);font-size:11px;display:block;margin-top:2px}
+  .gate{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 14px;text-align:center;font-size:14px;overflow:hidden}
+  .gate .ico{font-size:24px;display:block;margin-bottom:6px}
+  .gate b{display:block;font-size:14px;color:#cfe2f3}
+  .gate small{color:var(--mute);font-size:12px;display:block;margin-top:4px;line-height:1.5}
   .gate::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--accent),transparent);opacity:.5}
 
-  details{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-top:10px}
-  details summary{cursor:pointer;color:var(--accent);font-family:ui-monospace,monospace;font-size:13px;outline:none}
+  details{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin-top:10px}
+  details summary{cursor:pointer;color:var(--accent);font-family:ui-monospace,monospace;font-size:14px;outline:none}
   details[open] summary{margin-bottom:8px}
 
-  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--mute)}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:13px;color:var(--mute)}
   .legend span{display:inline-flex;align-items:center;gap:5px}
   .legend i{width:9px;height:9px;border-radius:2px;display:inline-block;background:var(--accent)}
 
   /* tension / spotlight callout */
-  .tension{background:linear-gradient(135deg,rgba(255,140,102,.08),rgba(124,220,255,.06));border:1px solid rgba(255,140,102,.3);border-radius:14px;padding:24px 26px;margin-top:18px;position:relative}
-  .tension h3{margin:0 0 8px;color:#ffd5c2;font-size:20px}
-  .tension p{margin:0 0 10px;color:#e6edf3}
-  .tension .pin{position:absolute;top:-10px;left:18px;font-size:11px;letter-spacing:.12em;background:#0b0f14;border:1px solid rgba(255,140,102,.4);color:var(--warn);padding:3px 10px;border-radius:999px;font-family:ui-monospace,monospace}
+  .tension{background:linear-gradient(135deg,rgba(255,140,102,.08),rgba(124,220,255,.06));border:1px solid rgba(255,140,102,.3);border-radius:14px;padding:28px 30px;margin-top:18px;position:relative}
+  .tension h3{margin:0 0 10px;color:#ffd5c2;font-size:23px;line-height:1.3}
+  .tension p{margin:0 0 12px;color:#e6edf3;font-size:16px}
+  .tension .pin{position:absolute;top:-11px;left:20px;font-size:12px;letter-spacing:.12em;background:#0b0f14;border:1px solid rgba(255,140,102,.4);color:var(--warn);padding:4px 11px;border-radius:999px;font-family:ui-monospace,monospace}
 
   /* numbers callout */
   .nums{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}
   @media (max-width:840px){.nums{grid-template-columns:repeat(2,1fr)}}
-  .num-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
-  .num-card .v{font-size:22px;font-weight:700;color:var(--accent2);font-family:ui-monospace,monospace;letter-spacing:-0.02em}
-  .num-card .l{font-size:11px;color:var(--mute);margin-top:4px;letter-spacing:.04em;text-transform:uppercase}
+  .num-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 14px;text-align:center}
+  .num-card .v{font-size:26px;font-weight:700;color:var(--accent2);font-family:ui-monospace,monospace;letter-spacing:-0.02em}
+  .num-card .l{font-size:12px;color:var(--mute);margin-top:5px;letter-spacing:.04em;text-transform:uppercase}
 
   /* decision cards */
-  .decision{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;position:relative}
-  .decision .verdict{font-size:11px;color:var(--accent);font-family:ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase}
-  .decision h4{margin:4px 0 6px;font-size:15px}
-  .decision p{margin:0;font-size:13px;color:#cbd6e2}
-  .decision .vs{color:var(--mute);font-size:12px;margin-top:6px;font-style:italic}
+  .decision{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;position:relative}
+  .decision .verdict{font-size:12px;color:var(--accent);font-family:ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase}
+  .decision h4{margin:6px 0 8px;font-size:17px}
+  .decision p{margin:0;font-size:14.5px;color:#cbd6e2;line-height:1.55}
+  .decision .vs{color:var(--mute);font-size:13px;margin-top:8px;font-style:italic}
 
   /* deep-dive collapsible group */
   .deepdives details{background:var(--panel2);margin-top:8px}
-  .deepdives > h3{margin-top:24px;color:#cfe2f3;font-size:16px;border-bottom:1px dashed var(--line);padding-bottom:6px}
+  .deepdives > h3{margin-top:28px;color:#cfe2f3;font-size:18px;border-bottom:1px dashed var(--line);padding-bottom:8px}
 
   /* spotlighted prompt block */
-  .spot{border-left:3px solid var(--accent2);padding:8px 14px;background:rgba(255,209,102,.04);border-radius:0 8px 8px 0;margin:8px 0;font-size:13.5px;color:#e6edf3}
+  .spot{border-left:3px solid var(--accent2);padding:10px 16px;background:rgba(255,209,102,.04);border-radius:0 8px 8px 0;margin:10px 0;font-size:15px;color:#e6edf3;line-height:1.55}
   .spot b{color:var(--accent2)}
 
   /* hero action buttons */
   .hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px;align-items:center}
-  .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:8px;font-size:13.5px;font-family:ui-monospace,monospace;letter-spacing:.02em;text-decoration:none;transition:all .2s;border:1px solid var(--line)}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:8px;font-size:14.5px;font-family:ui-monospace,monospace;letter-spacing:.02em;text-decoration:none;transition:all .2s;border:1px solid var(--line)}
   .btn:hover{text-decoration:none;transform:translateY(-1px)}
   .btn.primary{background:var(--accent);color:#001220;border-color:var(--accent)}
   .btn.primary:hover{background:#a3e7ff;box-shadow:0 4px 16px rgba(124,220,255,.25)}
@@ -234,12 +236,12 @@
 
   /* shields.io badge row */
   .badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;align-items:center}
-  .badges img{height:20px;border-radius:3px;display:block}
+  .badges img{height:22px;border-radius:3px;display:block}
 
   /* tech-stack pills */
   .stack{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}
-  .stack-label{font-size:11px;color:var(--mute);letter-spacing:.08em;text-transform:uppercase;font-family:ui-monospace,monospace;margin-right:4px}
-  .pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;background:rgba(124,220,255,.06);border:1px solid rgba(124,220,255,.2);font-size:12px;color:#cfe2f3;font-family:ui-monospace,monospace}
+  .stack-label{font-size:12px;color:var(--mute);letter-spacing:.08em;text-transform:uppercase;font-family:ui-monospace,monospace;margin-right:4px}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;background:rgba(124,220,255,.06);border:1px solid rgba(124,220,255,.2);font-size:13px;color:#cfe2f3;font-family:ui-monospace,monospace}
   .pill .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
   .pill.py .dot{background:#3776ab}
   .pill.flask .dot{background:#e6edf3}
@@ -248,17 +250,17 @@
   .pill.windows .dot{background:#00a4ef}
 
   /* source links beside section headings */
-  .src-link{font-family:ui-monospace,monospace;font-size:11px;color:var(--mute);margin-left:auto;text-decoration:none;padding:3px 8px;border-radius:5px;border:1px solid var(--line);background:rgba(255,255,255,.02);transition:all .2s}
+  .src-link{font-family:ui-monospace,monospace;font-size:12px;color:var(--mute);margin-left:auto;text-decoration:none;padding:4px 10px;border-radius:5px;border:1px solid var(--line);background:rgba(255,255,255,.02);transition:all .2s}
   .src-link:hover{color:var(--accent);border-color:var(--accent);text-decoration:none;background:rgba(124,220,255,.06)}
   h2.with-src{justify-content:flex-start}
 
   /* structured footer */
   .footer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:32px;padding-top:24px;border-top:1px solid var(--line)}
   @media (max-width:840px){.footer-grid{grid-template-columns:1fr;gap:20px}}
-  .footer-col h5{font-size:11px;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;font-family:ui-monospace,monospace;margin:0 0 8px}
+  .footer-col h5{font-size:12px;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;font-family:ui-monospace,monospace;margin:0 0 10px}
   .footer-col ul{list-style:none;padding:0;margin:0}
-  .footer-col li{margin:4px 0;font-size:13px;color:var(--mute)}
-  .footer-col a{color:#cbd6e2;font-size:13px}
+  .footer-col li{margin:5px 0;font-size:14px;color:var(--mute)}
+  .footer-col a{color:#cbd6e2;font-size:14px}
   .footer-col a:hover{color:var(--accent)}
 </style>
 </head>
@@ -334,13 +336,13 @@
   <p>The answer is "yes, but the obvious build doesn't work." You can't just stream game state into an LLM and pipe its replies to your speakers — the latency is wrong by an order of magnitude, the model repeats itself, and half the time its advice is for a fight that's already over. This page walks through the design choices that close that gap.</p>
 
   <div class="grid cols-4" style="margin-top:18px">
-    <div class="card"><span class="badge">INPUT</span><h4>Dota GSI</h4><p class="mute" style="font-size:13px;margin:0">Game client POSTs JSON every ~100&nbsp;ms — map, hero, items, abilities, minimap, buildings, events.</p></div>
-    <div class="card"><span class="badge">SERVER</span><h4>Flask + thread</h4><p class="mute" style="font-size:13px;margin:0">Single endpoint <code>POST /gsi/</code>. Returns 200 immediately. LLM call hops to a daemon thread.</p></div>
-    <div class="card"><span class="badge">BRAIN</span><h4>Local LLM</h4><p class="mute" style="font-size:13px;margin:0">Ollama default (<code>qwen3.6:27b</code> / <code>gemma4:e4b</code>); Gemini supported via OpenAI-compat shim.</p></div>
-    <div class="card"><span class="badge">OUTPUT</span><h4>Piper voice</h4><p class="mute" style="font-size:13px;margin:0">Synthesized to a temp WAV, played through <code>winsound</code> — coach in your ear, not on your screen.</p></div>
+    <div class="card"><span class="badge">INPUT</span><h4>Dota GSI</h4><p class="mute" style="font-size:14.5px;margin:0;line-height:1.55">Game client POSTs JSON every ~100&nbsp;ms — map, hero, items, abilities, minimap, buildings, events.</p></div>
+    <div class="card"><span class="badge">SERVER</span><h4>Flask + thread</h4><p class="mute" style="font-size:14.5px;margin:0;line-height:1.55">Single endpoint <code>POST /gsi/</code>. Returns 200 immediately. LLM call hops to a daemon thread.</p></div>
+    <div class="card"><span class="badge">BRAIN</span><h4>Local LLM</h4><p class="mute" style="font-size:14.5px;margin:0;line-height:1.55">Ollama default (<code>qwen3.6:27b</code> / <code>gemma4:e4b</code>); Gemini supported via OpenAI-compat shim.</p></div>
+    <div class="card"><span class="badge">OUTPUT</span><h4>Piper voice</h4><p class="mute" style="font-size:14.5px;margin:0;line-height:1.55">Synthesized to a temp WAV, played through <code>winsound</code> — coach in your ear, not on your screen.</p></div>
   </div>
 
-  <p class="mute" style="margin-top:14px;font-size:13px">Why local? Three reasons. <b>Privacy</b> — game state is detailed and personal. <b>Cost</b> — at one LLM call per 30 s of a 45 min match, cloud bills get real. <b>No network in the hot path</b> — your tip shouldn't depend on residential WiFi during a teamfight.</p>
+  <p class="mute" style="margin-top:14px;font-size:14.5px">Why local? Three reasons. <b>Privacy</b> — game state is detailed and personal. <b>Cost</b> — at one LLM call per 30 s of a 45 min match, cloud bills get real. <b>No network in the hot path</b> — your tip shouldn't depend on residential WiFi during a teamfight.</p>
 </section>
 
 <!-- 02 THE HARD PART -->
@@ -494,9 +496,9 @@ return ("ok", 200)                         # never block on LLM</code></pre>
 
   <h3>Three sources of events</h3>
   <div class="grid cols-3" style="margin-top:8px">
-    <div class="card"><h4>Diff-derived</h4><p class="mute" style="font-size:13px;margin:0">Compare prev↔curr summary: KDA changes, level-ups, HP/MP crossing thresholds, ult coming off cooldown, item gained/lost, building lost, status flag flip.</p></div>
-    <div class="card"><h4>Server-event derived</h4><p class="mute" style="font-size:13px;margin:0">From GSI's <code>events</code> array: Roshan killed, Aegis picked up, hero kills, tower/rax kills, ward kills, courier events — each dedup'd by sorted-KV tuple.</p></div>
-    <div class="card"><h4>Derived &amp; periodic</h4><p class="mute" style="font-size:13px;margin:0"><code>enemies_missing</code> fires after ≥ 2 enemies are off-map for ≥ 5 s. <code>periodic_check</code> fires every 120 game-seconds — guarantees a strategic check-in in quiet stretches.</p></div>
+    <div class="card"><h4>Diff-derived</h4><p class="mute" style="font-size:14.5px;margin:0;line-height:1.55">Compare prev↔curr summary: KDA changes, level-ups, HP/MP crossing thresholds, ult coming off cooldown, item gained/lost, building lost, status flag flip.</p></div>
+    <div class="card"><h4>Server-event derived</h4><p class="mute" style="font-size:14.5px;margin:0;line-height:1.55">From GSI's <code>events</code> array: Roshan killed, Aegis picked up, hero kills, tower/rax kills, ward kills, courier events — each dedup'd by sorted-KV tuple.</p></div>
+    <div class="card"><h4>Derived &amp; periodic</h4><p class="mute" style="font-size:14.5px;margin:0;line-height:1.55"><code>enemies_missing</code> fires after ≥ 2 enemies are off-map for ≥ 5 s. <code>periodic_check</code> fires every 120 game-seconds — guarantees a strategic check-in in quiet stretches.</p></div>
   </div>
 
   <h3 style="margin-top:22px">Triggers that wake the LLM</h3>
@@ -510,7 +512,7 @@ return ("ok", 200)                         # never block on LLM</code></pre>
     <span class="chip dot">periodic_check</span><span class="chip dot">kill</span>
     <span class="chip dot">team_kill</span>
   </div>
-  <p class="mute" style="font-size:12.5px;margin-top:6px">* <code>level_up</code> only fires at milestone levels {2,&nbsp;6,&nbsp;10,&nbsp;12,&nbsp;15,&nbsp;18,&nbsp;20,&nbsp;25} — the levels that actually unlock something.</p>
+  <p class="mute" style="font-size:13.5px;margin-top:6px">* <code>level_up</code> only fires at milestone levels {2,&nbsp;6,&nbsp;10,&nbsp;12,&nbsp;15,&nbsp;18,&nbsp;20,&nbsp;25} — the levels that actually unlock something.</p>
 
   <h3>Why debounce vision and status?</h3>
   <p>GSI's minimap and status flags flicker. A hero on the edge of vision blinks on and off every other tick; a Razor static link debuffs you for half a second and the model would be told "you're disarmed" five times in a row. Both go through a debounce: the change must persist for 2&nbsp;s (status) or 3&nbsp;s (vision) before an event is emitted. Server events get a different dedup — keyed by their sorted KV tuple, capped at 500 entries.</p>
@@ -522,7 +524,7 @@ return ("ok", 200)                         # never block on LLM</code></pre>
   <p>One LLM call is expensive, so we pack each one. The <b>system prompt</b> is fixed; the <b>user message</b> is assembled per-call from the current summary, recent events, recent tips, the running enemy lineup, and the trigger that woke it.</p>
 
   <h3>System prompt — what doesn't change</h3>
-  <ul style="font-size:13.5px">
+  <ul style="font-size:15px">
     <li><b>Output contract:</b> one tip, one or two short sentences. No greeting, no padding. Reply just <code>OK</code> if there's nothing useful to add — gives the model an explicit "decline" path so it doesn't fill silence with fluff.</li>
     <li><b>Visibility rules:</b> own hero fully known; enemy HP/items/mana <b>never</b> visible to GSI; ally items/HP not visible. Stops the model from making up information it can't have seen.</li>
     <li><b>Hallucination clamp:</b> "only suggest abilities/items that appear in the user message." The user message lists the full ability + item set, so this constrains the model to the actually-castable kit.</li>
@@ -636,7 +638,7 @@ def _call_llm(model, user_msg, timeout=120):
   "stream": false, "think": false,
   "options": { "temperature": 0.4, "num_predict": 400 }
 }</code></pre>
-      <p class="mute" style="font-size:12.5px;margin:6px 0 0">Default. Local, private, free. Latency depends on GPU + model size.</p>
+      <p class="mute" style="font-size:13.5px;margin:6px 0 0">Default. Local, private, free. Latency depends on GPU + model size.</p>
     </div>
     <div class="card"><h4>OpenAI-compatible path</h4>
 <pre><code>POST {GEMINI_URL}
@@ -646,7 +648,7 @@ Authorization: Bearer {GEMINI_API_KEY}
   "messages": [system, user],
   "temperature": 0.4, "max_tokens": 400
 }</code></pre>
-      <p class="mute" style="font-size:12.5px;margin:6px 0 0">Same payload works for Gemini, OpenRouter, OpenAI, any compatible endpoint — just point <code>GEMINI_URL</code> at it.</p>
+      <p class="mute" style="font-size:13.5px;margin:6px 0 0">Same payload works for Gemini, OpenRouter, OpenAI, any compatible endpoint — just point <code>GEMINI_URL</code> at it.</p>
     </div>
   </div>
 
@@ -665,8 +667,8 @@ Authorization: Bearer {GEMINI_API_KEY}
   <p>Every drop is logged with a reason. That's deliberate — silence in a coaching tool is ambiguous (was nothing happening? did the model crash? is it just throttled?). Each filter prints its own diagnostic, and per-match logs make post-game review tractable.</p>
 
   <div class="grid cols-2">
-    <div class="card"><h4>Per-match log rotation</h4><p class="mute" style="font-size:13px;margin:0">Boots into <code>logs/session_&lt;ts&gt;.log</code>. On the first GSI tick with a matchid, <code>switch_to_match()</code> renames it to <code>&lt;matchid&gt;.log</code>, carrying pre-game content forward only from a <code>session_*</code> file. Match-to-match transitions get a clean cut.</p></div>
-    <div class="card"><h4>Raw GSI capture</h4><p class="mute" style="font-size:13px;margin:0">Opt-in via <code>RAW_GSI_ENABLED=1</code>. Writes every POST body as one JSON line to <code>logs/&lt;matchid&gt;_raw_gsi.jsonl</code> — useful for replay, prompt-engineering iteration, and building eval sets.</p></div>
+    <div class="card"><h4>Per-match log rotation</h4><p class="mute" style="font-size:14.5px;margin:0;line-height:1.55">Boots into <code>logs/session_&lt;ts&gt;.log</code>. On the first GSI tick with a matchid, <code>switch_to_match()</code> renames it to <code>&lt;matchid&gt;.log</code>, carrying pre-game content forward only from a <code>session_*</code> file. Match-to-match transitions get a clean cut.</p></div>
+    <div class="card"><h4>Raw GSI capture</h4><p class="mute" style="font-size:14.5px;margin:0;line-height:1.55">Opt-in via <code>RAW_GSI_ENABLED=1</code>. Writes every POST body as one JSON line to <code>logs/&lt;matchid&gt;_raw_gsi.jsonl</code> — useful for replay, prompt-engineering iteration, and building eval sets.</p></div>
   </div>
 
   <h3 style="margin-top:18px">Diagnostic messages worth knowing</h3>
@@ -680,7 +682,7 @@ Authorization: Bearer {GEMINI_API_KEY}
     <tr><td><code>[coach] ollama unreachable at {url}</code></td><td>Ollama daemon is down. Coach silently keeps trying.</td></tr>
   </table>
 
-  <p class="mute" style="font-size:12.5px;margin-top:8px">Werkzeug's per-request 200-OK access logger is silenced (set to <code>WARNING</code>) in <code>logger.setup_logging()</code> — otherwise the log would be 99% access spam.</p>
+  <p class="mute" style="font-size:13.5px;margin-top:8px">Werkzeug's per-request 200-OK access logger is silenced (set to <code>WARNING</code>) in <code>logger.setup_logging()</code> — otherwise the log would be 99% access spam.</p>
 </section>
 
 <!-- 11 WHAT'S NEXT -->
@@ -689,12 +691,12 @@ Authorization: Bearer {GEMINI_API_KEY}
   <p>Honest gaps. None of these are blocking; each is a real next step.</p>
 
   <div class="grid cols-2">
-    <div class="card"><span class="badge">EVAL</span><h4>Tip-quality eval harness</h4><p class="mute" style="font-size:13px;margin:0">Replay captured <code>{matchid}_raw_gsi.jsonl</code> files against a held-out set; score tips by rubric (specific? actionable? hallucinated abilities/items? freshness?). Today quality is judged by ear, which doesn't scale.</p></div>
-    <div class="card"><span class="badge">A/B</span><h4>Prompt &amp; model A/B</h4><p class="mute" style="font-size:13px;margin:0">Run two configurations side-by-side against the same replay, diff the tip streams. Today the only way to compare is to play two matches.</p></div>
-    <div class="card"><span class="badge">LATENCY</span><h4>Streaming + mid-flight cancel</h4><p class="mute" style="font-size:13px;margin:0">Stream tokens; cancel the call when <code>_stale_reason()</code> becomes true mid-generation. Currently a slow tip burns the full latency budget even when it'll be dropped on arrival.</p></div>
-    <div class="card"><span class="badge">DEDUP</span><h4>Embedding-based similarity</h4><p class="mute" style="font-size:13px;margin:0">Jaccard catches near-duplicates but misses paraphrases ("escape to base" vs "TP home"). A small embedding model + cosine threshold would catch both.</p></div>
-    <div class="card"><span class="badge">RAG</span><h4>Hero / matchup knowledge</h4><p class="mute" style="font-size:13px;margin:0">Retrieve hero-specific guides + matchup priorities into the prompt. Today the model relies on parametric knowledge — small models guess Earth Spirit's Magnetize from the name.</p></div>
-    <div class="card"><span class="badge">FEEDBACK</span><h4>In-game tip rating</h4><p class="mute" style="font-size:13px;margin:0">A hotkey to thumbs-up / thumbs-down the last tip; collect those into a preference dataset for fine-tuning or DPO down the line.</p></div>
+    <div class="card"><span class="badge">EVAL</span><h4>Tip-quality eval harness</h4><p class="mute" style="font-size:14.5px;margin:0;line-height:1.55">Replay captured <code>{matchid}_raw_gsi.jsonl</code> files against a held-out set; score tips by rubric (specific? actionable? hallucinated abilities/items? freshness?). Today quality is judged by ear, which doesn't scale.</p></div>
+    <div class="card"><span class="badge">A/B</span><h4>Prompt &amp; model A/B</h4><p class="mute" style="font-size:14.5px;margin:0;line-height:1.55">Run two configurations side-by-side against the same replay, diff the tip streams. Today the only way to compare is to play two matches.</p></div>
+    <div class="card"><span class="badge">LATENCY</span><h4>Streaming + mid-flight cancel</h4><p class="mute" style="font-size:14.5px;margin:0;line-height:1.55">Stream tokens; cancel the call when <code>_stale_reason()</code> becomes true mid-generation. Currently a slow tip burns the full latency budget even when it'll be dropped on arrival.</p></div>
+    <div class="card"><span class="badge">DEDUP</span><h4>Embedding-based similarity</h4><p class="mute" style="font-size:14.5px;margin:0;line-height:1.55">Jaccard catches near-duplicates but misses paraphrases ("escape to base" vs "TP home"). A small embedding model + cosine threshold would catch both.</p></div>
+    <div class="card"><span class="badge">RAG</span><h4>Hero / matchup knowledge</h4><p class="mute" style="font-size:14.5px;margin:0;line-height:1.55">Retrieve hero-specific guides + matchup priorities into the prompt. Today the model relies on parametric knowledge — small models guess Earth Spirit's Magnetize from the name.</p></div>
+    <div class="card"><span class="badge">FEEDBACK</span><h4>In-game tip rating</h4><p class="mute" style="font-size:14.5px;margin:0;line-height:1.55">A hotkey to thumbs-up / thumbs-down the last tip; collect those into a preference dataset for fine-tuning or DPO down the line.</p></div>
   </div>
 </section>
 
@@ -712,7 +714,7 @@ Authorization: Bearer {GEMINI_API_KEY}
 
     <div class="grid cols-2" style="margin-top:14px">
       <div class="card"><h4>Server cfg knobs</h4>
-        <ul style="font-size:13px;margin:6px 0 0 18px;padding:0">
+        <ul style="font-size:14.5px;margin:6px 0 0 18px;padding:0">
           <li><code>uri</code> — local endpoint (<code>http://127.0.0.1:8000/gsi/</code>)</li>
           <li><code>timeout</code> 5s · <code>buffer</code> 0.1s · <code>throttle</code> 0.5s · <code>heartbeat</code> 30s</li>
           <li><code>auth.token</code> — must match <code>DOTA2_GSI_TOKEN</code> env (or the default)</li>
@@ -780,12 +782,12 @@ Authorization: Bearer {GEMINI_API_KEY}
 
   <details>
     <summary>GSI field → where we use it → why (full mapping)</summary>
-    <p class="mute" style="font-size:13px">Every field we consume, mapped against the module that reads it and the user-visible behavior it drives. Fields marked <span style="color:var(--mute)">·</span> are requested from Dota but parsed-and-stored only (no downstream consumer yet).</p>
+    <p class="mute" style="font-size:14.5px">Every field we consume, mapped against the module that reads it and the user-visible behavior it drives. Fields marked <span style="color:var(--mute)">·</span> are requested from Dota but parsed-and-stored only (no downstream consumer yet).</p>
 
     <table>
       <tr><th style="width:24%">GSI path</th><th style="width:22%">Stored in summary as</th><th style="width:20%">Read by</th><th>Purpose</th></tr>
 
-      <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.08em">▸ MAP</td></tr>
+      <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:12px;letter-spacing:.08em">▸ MAP</td></tr>
       <tr><td><code>map.matchid</code></td><td><code>matchid</code></td><td>main.py · events.py</td><td>Rotate <code>session_*.log</code> → <code>&lt;matchid&gt;.log</code>; trigger <code>EventDiffer._reset()</code> on match change; reset per-match <code>recommended_items</code> in Coach.</td></tr>
       <tr><td><code>map.clock_time</code></td><td><code>clock</code></td><td>events.py · coach.py</td><td>Stamped on every event; gates <code>MIN_INTERVAL_SEC</code> / <code>PER_TRIGGER_COOLDOWN_SEC</code>; drives <code>_game_phase()</code> (PRE/EARLY/MID/LATE) and periodic-check timing; pre-game guard (<code>clock &lt; 0</code> skips derived triggers).</td></tr>
       <tr><td><code>map.game_time</code></td><td><code>game_time</code></td><td><span class="mute">·</span></td><td>Captured but not currently consumed downstream.</td></tr>
@@ -794,7 +796,7 @@ Authorization: Bearer {GEMINI_API_KEY}
       <tr><td><code>map.paused</code></td><td><code>paused</code></td><td>events.py</td><td>Emits <code>pause</code> event on flip.</td></tr>
       <tr><td><code>map.radiant_score</code> / <code>dire_score</code></td><td><code>score.radiant</code> / <code>score.dire</code></td><td>events.py · coach.py</td><td>Diff detects kills on either team → emits <code>team_kill</code>; surfaced in prompt as <code>R{r}-D{d}</code>.</td></tr>
 
-      <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.08em">▸ PLAYER</td></tr>
+      <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:12px;letter-spacing:.08em">▸ PLAYER</td></tr>
       <tr><td><code>player.name</code></td><td><code>player.name</code></td><td><span class="mute">·</span></td><td>Captured; not currently used.</td></tr>
       <tr><td><code>player.team_name</code></td><td><code>player.team</code></td><td>extract_info · events · coach</td><td>Used by <code>slot_side()</code> to bucket every 0–9 slot into self / ally / enemy; classifies which side a tower/rax kill belongs to.</td></tr>
       <tr><td><code>player.player_slot</code></td><td><code>player.player_slot</code></td><td>events.py</td><td>Anchor for slot→hero map; passed to <code>slot_side()</code> on every server event.</td></tr>
@@ -802,7 +804,7 @@ Authorization: Bearer {GEMINI_API_KEY}
       <tr><td><code>player.last_hits</code> / <code>denies</code></td><td><code>player.last_hits/denies</code></td><td>coach.py</td><td>Surfaced in prompt as CS line.</td></tr>
       <tr><td><code>player.gold</code> / <code>gpm</code> / <code>xpm</code></td><td><code>player.gold/gpm/xpm</code></td><td>coach.py</td><td>Surfaced in prompt — model needs gold for "build [item] next" recommendations.</td></tr>
 
-      <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.08em">▸ HERO</td></tr>
+      <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:12px;letter-spacing:.08em">▸ HERO</td></tr>
       <tr><td><code>hero.name</code></td><td><code>self.hero</code></td><td>events.py · coach.py</td><td>Seeds <code>slot_to_hero</code> for the player; identifies hero in prompt via <code>hero_info()</code> (dname + roles + attribute).</td></tr>
       <tr><td><code>hero.facet</code></td><td><code>self.facet</code></td><td>coach.py</td><td>Surfaced in prompt — facets change ability behavior, model needs to know which is picked.</td></tr>
       <tr><td><code>hero.level</code></td><td><code>self.level</code></td><td>events.py · coach.py</td><td>Diff emits <code>level_up</code> (filtered against <code>LEVEL_UP_MILESTONES</code>); surfaced in prompt.</td></tr>
@@ -818,23 +820,23 @@ Authorization: Bearer {GEMINI_API_KEY}
       <tr><td><code>hero.talent_1..8</code></td><td><code>self.talents</code></td><td>events.py</td><td>New picks → <code>talent</code> event ("Picked talent #N").</td></tr>
       <tr><td><code>hero.aghanims_scepter</code> / <code>aghanims_shard</code></td><td><code>self.aghs</code> / <code>self.shard</code></td><td>events.py</td><td>False → True flip emits <code>aghs</code> / <code>shard</code> events.</td></tr>
 
-      <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.08em">▸ ABILITIES &amp; ITEMS</td></tr>
+      <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:12px;letter-spacing:.08em">▸ ABILITIES &amp; ITEMS</td></tr>
       <tr><td><code>abilities.slotN.*</code></td><td><code>abilities[]</code></td><td>events.py · coach.py</td><td>Ultimate cooldown going prev&gt;0 → 0 emits <code>ult_ready</code>. All abilities rendered as a prompt block with name + dname, level, ult/passive flag, cooldown, and first-sentence description. Anchors the "only suggest abilities listed" rule.</td></tr>
       <tr><td><code>items.slotN.*</code></td><td><code>items[]</code></td><td>events.py · coach.py</td><td>Equipped-slot diff emits <code>item_added</code> / <code>item_removed</code>; dnames listed in prompt. <code>cooldown</code>/<code>charges</code> captured but not surfaced (good candidate for "blink off cd → engage" tips).</td></tr>
 
-      <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.08em">▸ BUILDINGS &amp; MINIMAP</td></tr>
+      <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:12px;letter-spacing:.08em">▸ BUILDINGS &amp; MINIMAP</td></tr>
       <tr><td><code>buildings.&lt;our_team&gt;</code></td><td><code>our_buildings</code></td><td>events.py</td><td>Set diff emits <code>our_building_fell</code> when a key disappears (T1 down, rax down, etc.).</td></tr>
       <tr><td><code>minimap.* image=minimap_herocircle</code></td><td><code>allies[]</code> (hero + pos)</td><td>coach.py</td><td>Surfaced as "Allies in vision (lane shown)" in the prompt.</td></tr>
       <tr><td><code>minimap.* image=minimap_enemyicon</code></td><td><code>enemies[]</code> + <code>enemies_seen_count</code> + <code>enemies_missing</code></td><td>events.py · coach.py</td><td>Vision debounce (<code>VISION_DEBOUNCE_SEC=3</code>) → <code>enemy_seen</code> / <code>enemy_lost</code>; <code>enemies_missing ≥ 2</code> sustained 5&nbsp;s → <code>enemies_missing</code> event; populates the running <code>enemy_lineup</code>; used by <code>_stale_reason()</code> (drop if &lt; 2 missing now); surfaced in prompt.</td></tr>
       <tr><td><code>minimap.* image=minimap_tower*/racks*/ancient</code> (enemy team)</td><td><code>enemy_buildings_visible</code></td><td><span class="mute">·</span></td><td>Captured; not currently fed to the prompt.</td></tr>
 
-      <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.08em">▸ ROSHAN &amp; EVENTS</td></tr>
+      <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:12px;letter-spacing:.08em">▸ ROSHAN &amp; EVENTS</td></tr>
       <tr><td><code>roshan</code></td><td><code>roshan</code></td><td>events.py</td><td>JSON-equality diff emits a <code>roshan</code> event whenever any field changes (HP, alive_in, items_held).</td></tr>
       <tr><td><code>event_type=roshan_killed / aegis_picked_up</code></td><td><code>events[]</code></td><td>events.py</td><td>Emits typed events with side + slot info. Wakes the LLM for rosh / aegis management.</td></tr>
       <tr><td><code>generic_event → CHAT_MESSAGE_HERO_KILL</code></td><td><code>events[]</code></td><td>events.py</td><td>Emits <code>hero_kill</code> / <code>first_blood</code>; also drives slot→hero inference if exactly one hero of the victim's side just vanished from the minimap.</td></tr>
       <tr><td><code>generic_event → CHAT_MESSAGE_ITEM_PURCHASE / TOWER_KILL / BARRACKS_KILL / OBSERVER_WARD_KILLED / COURIER_LOST / COURIER_RESPAWNED</code></td><td><code>events[]</code></td><td>events.py</td><td>Each emits its own typed event with parsed slot + side info. Tower/rax kills classified as "ours"/"theirs" from the <code>value</code> field.</td></tr>
 
-      <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.08em">▸ CAPTURED BUT UNUSED · AUTH</td></tr>
+      <tr><td colspan="4" style="background:#0e1622;color:var(--accent);font-family:ui-monospace,monospace;font-size:12px;letter-spacing:.08em">▸ CAPTURED BUT UNUSED · AUTH</td></tr>
       <tr><td><code>couriers</code> / <code>neutralitems</code></td><td>same names</td><td><span class="mute">·</span></td><td>Raw passthrough; no consumer.</td></tr>
       <tr><td><code>draft</code> / <code>provider</code></td><td><span class="mute">— (not in summary)</span></td><td><span class="mute">·</span></td><td>Requested in cfg but not read. <code>draft</code> is useful future signal for draft-phase advice.</td></tr>
       <tr><td><code>auth.token</code></td><td><span class="mute">— (not in summary)</span></td><td>main.py</td><td>Compared against <code>DOTA2_GSI_TOKEN</code>; mismatch returns 401.</td></tr>
@@ -935,9 +937,9 @@ Authorization: Bearer {GEMINI_API_KEY}
     <summary>TTS pipeline</summary>
     <p>Piper synthesizes to a temp WAV, <code>winsound.PlaySound</code> plays it, then the WAV is deleted. A single <code>_lock</code> serializes playback so tips don't talk over each other. Each <code>speak()</code> call spawns its own daemon thread, so the coach pipeline is never blocked by audio.</p>
     <div class="grid cols-3" style="margin-top:14px">
-      <div class="card"><span class="badge">DEFAULT</span><h4>en_US-amy-medium</h4><p class="mute" style="font-size:13px;margin:0">ONNX + JSON sidecar under <code>models/</code>. Override with <code>$env:PIPER_MODEL</code>.</p></div>
-      <div class="card"><span class="badge">FALLBACK</span><h4>Missing voice</h4><p class="mute" style="font-size:13px;margin:0">No exception — prints <code>[tts] model not found</code> and silently disables speech. Tips still log.</p></div>
-      <div class="card"><span class="badge">KILL SWITCH</span><h4><code>TTS_DISABLED=1</code></h4><p class="mute" style="font-size:13px;margin:0">Set the env var to mute the run entirely. Useful for development.</p></div>
+      <div class="card"><span class="badge">DEFAULT</span><h4>en_US-amy-medium</h4><p class="mute" style="font-size:14.5px;margin:0;line-height:1.55">ONNX + JSON sidecar under <code>models/</code>. Override with <code>$env:PIPER_MODEL</code>.</p></div>
+      <div class="card"><span class="badge">FALLBACK</span><h4>Missing voice</h4><p class="mute" style="font-size:14.5px;margin:0;line-height:1.55">No exception — prints <code>[tts] model not found</code> and silently disables speech. Tips still log.</p></div>
+      <div class="card"><span class="badge">KILL SWITCH</span><h4><code>TTS_DISABLED=1</code></h4><p class="mute" style="font-size:14.5px;margin:0;line-height:1.55">Set the env var to mute the run entirely. Useful for development.</p></div>
     </div>
   </details>
 
@@ -1033,13 +1035,13 @@ Authorization: Bearer {GEMINI_API_KEY}
 $env:DOTA_COACH_MODEL = "gemma4:e4b"
 
 python main.py</code></pre>
-    <p class="mute" style="font-size:13px">Then launch a Dota match. You should see <code>[server_event]</code>, snapshot blocks every 30 s, and <code>[COACH][model] tip…</code> lines a few seconds after triggers.</p>
+    <p class="mute" style="font-size:14.5px">Then launch a Dota match. You should see <code>[server_event]</code>, snapshot blocks every 30 s, and <code>[COACH][model] tip…</code> lines a few seconds after triggers.</p>
   </details>
 
   <details>
     <summary>Extending the coach (add a trigger, add a field, …)</summary>
     <p><b>Add a new trigger type:</b></p>
-    <ol style="font-size:13.5px;margin:6px 0 0 18px;padding:0">
+    <ol style="font-size:15px;margin:6px 0 0 18px;padding:0">
       <li>Decide where to detect it. Diff-based? Add to a <code>_diff_*</code> method on <code>EventDiffer</code>. Server-event? Add a branch in <code>_parse_server_event</code>. Derived? Extend <code>_derived_triggers</code>.</li>
       <li>Emit it with <code>self._ev(clk, "your_type", "human-readable msg", ...extra)</code>.</li>
       <li>Add <code>"your_type"</code> to <code>coach.TRIGGER_TYPES</code> so the gate considers it.</li>
@@ -1048,7 +1050,7 @@ python main.py</code></pre>
     </ol>
 
     <p style="margin-top:12px"><b>Add a new field to the summary contract:</b></p>
-    <ol style="font-size:13.5px;margin:6px 0 0 18px;padding:0">
+    <ol style="font-size:15px;margin:6px 0 0 18px;padding:0">
       <li>Populate it in <code>extract_info.summarize()</code>.</li>
       <li>Make every consumer tolerate it being missing (older captured logs may not have it).</li>
       <li>Read it in <code>EventDiffer</code> if it produces events.</li>
@@ -1057,7 +1059,7 @@ python main.py</code></pre>
     </ol>
 
     <p style="margin-top:12px"><b>Smoke tests without launching Dota:</b></p>
-    <ul style="font-size:13.5px;margin:6px 0 0 18px;padding:0">
+    <ul style="font-size:15px;margin:6px 0 0 18px;padding:0">
       <li><code>python extract_info.py</code> — pretty-prints <code>data_less_kill2.json</code> (a captured GSI tick). Quick check that <code>summarize()</code> / <code>print_snapshot()</code> still work.</li>
       <li><code>python tts.py</code> — says <i>"Coach online. Synthesis test, one two three."</i> Checks voice files + audio device.</li>
     </ul>
